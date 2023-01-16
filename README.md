@@ -1,5 +1,7 @@
 # vldocking
 
+[![Maven Central](https://img.shields.io/maven-central/v/org.bidib.jbidib.com.vldocking/vldocking.svg?label=Maven%20Central&style=flat)](https://search.maven.org/artifact/org.bidib.jbidib.com.vldocking/vldocking)
+
 This is a fork of https://github.com/cmadsen/vldocking
 
 ## So what's new?
