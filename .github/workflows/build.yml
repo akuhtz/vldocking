@@ -1,0 +1,65 @@
+name: Java CI
+
+on: 
+  push:
+    branches:
+      - '**'
+    # Sequence of patterns matched against refs/tags
+    tags-ignore:
+      - '**'
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # test against latest update of each major Java version, as well as specific updates of LTS versions:
+        java: [ 8, 11, 17 ]
+    name: Java ${{ matrix.java }} build
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Set up JDK ${{ matrix.java }}
+        uses: actions/setup-java@3a4f6e1af504cf6a31855fa899c6aa5355ba6c12 # v4.7.0
+        with:
+          distribution: 'temurin' # See 'Supported distributions' for available options
+          java-version: ${{ matrix.java }}
+          cache: 'maven'
+#      - name: Cache Maven packages
+#        uses: actions/cache@0c907a75c2c80ebcb7f088228285e798b750cf8f # v4.2.1
+#        with:
+#          path: ~/.m2
+#          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+#          restore-keys: |
+#            ${{ runner.os }}-m2          
+      - name: Show Maven version
+        run: mvn --version
+      - name: Build with Maven
+        run: mvn --batch-mode --update-snapshots verify
+  deploy:
+    if: contains( github.ref, 'master')
+    needs: build
+    name: Deploy
+    runs-on: ubuntu-latest
+    environment: sonatype
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Set up JDK 8
+        uses: actions/setup-java@3a4f6e1af504cf6a31855fa899c6aa5355ba6c12 # v4.7.0
+        with:
+          distribution: temurin
+          java-version: 8
+          cache: 'maven'
+          server-id: ossrh
+          server-username: OSSRH_USERNAME # env variable for username in deploy
+          server-password: OSSRH_PASSWORD # env variable for token in deploy
+          gpg-private-key: "${{ secrets.GPG_SIGNING_KEY }}"
+          overwrite-settings: false
+      - name: Show Maven version
+        run: mvn --version
+      - name: Deploy snapshot artifacts
+        env:
+          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        run: mvn --batch-mode deploy --settings .github/workflows/settings.xml -Dpgp.keyname=${{ secrets.GPG_KEY_NAME }} -DskipTests=true -Prelease-sign-artifacts
