@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         # test against latest update of each major Java version, as well as specific updates of LTS versions:
-        java: [ 8, 11, 17 ]
+        java: [ 11, 17 ]
     name: Java ${{ matrix.java }} build
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -44,22 +44,22 @@ jobs:
     environment: sonatype
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      - name: Set up JDK 8
+      - name: Set up JDK 11
         uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # v4.7.1
         with:
           distribution: temurin
-          java-version: 8
+          java-version: 11
           cache: 'maven'
-          server-id: ossrh
-          server-username: OSSRH_USERNAME # env variable for username in deploy
-          server-password: OSSRH_PASSWORD # env variable for token in deploy
+          server-id: central
+          server-username: CENTRAL_USERNAME # env variable for username in deploy
+          server-password: CENTRAL_PASSWORD # env variable for token in deploy
           gpg-private-key: "${{ secrets.GPG_SIGNING_KEY }}"
           overwrite-settings: false
       - name: Show Maven version
         run: mvn --version
       - name: Deploy snapshot artifacts
         env:
-          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+          CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+          CENTRAL_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: mvn --batch-mode deploy --settings .github/workflows/settings.xml -Dpgp.keyname=${{ secrets.GPG_KEY_NAME }} -DskipTests=true -Prelease-sign-artifacts
