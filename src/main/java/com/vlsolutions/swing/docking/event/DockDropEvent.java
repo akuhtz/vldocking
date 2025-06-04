@@ -92,9 +92,15 @@ public class DockDropEvent extends DockEvent {
                 // this should happen only with whole tabs drags as they don't have any state
                 // associated with them (bug ?)
                 if (source instanceof TabbedDockableContainer) {
-                    Dockable d1 = ((TabbedDockableContainer) source).getDockableAt(0);
-                    state = desk.getContext().getDockableState(d1);
-                    sourceDesktop = state.getDesktop();
+                    if (((TabbedDockableContainer) source).getTabCount() > 0) {
+                        Dockable d1 = ((TabbedDockableContainer) source).getDockableAt(0);
+                        state = desk.getContext().getDockableState(d1);
+                        sourceDesktop = state.getDesktop();
+                    }
+                    else {
+                        sourceDesktop = null;
+                        this.accepted = false;
+                    }
                 }
                 else {
                     throw new RuntimeException("unmanaged dockable drag source : " + source);

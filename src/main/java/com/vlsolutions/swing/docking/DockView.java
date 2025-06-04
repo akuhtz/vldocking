@@ -30,6 +30,9 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vlsolutions.swing.docking.event.DockDragEvent;
 import com.vlsolutions.swing.docking.event.DockDropEvent;
 import com.vlsolutions.swing.docking.event.DockEvent;
@@ -68,6 +71,8 @@ import com.vlsolutions.swing.docking.event.DockingActionCreateTabEvent;
  * @update 2007/01/08 Lilian Chamontin : delegated the creation of the titlebar to allow easy override.
  */
 public class DockView extends JPanel implements DockDropReceiver, SingleDockableContainer {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DockView.class);
 
     private static final long serialVersionUID = 1L;
 
@@ -312,7 +317,12 @@ public class DockView extends JPanel implements DockDropReceiver, SingleDockable
                  */
                 ((DockDropEvent) event).acceptDrop();
                 /* } */
-                desktop.createTab(dockable, event.getDragSource().getDockable(), 0, true);
+                if (((DockDropEvent) event).isDropAccepted()) {
+                    desktop.createTab(dockable, event.getDragSource().getDockable(), 0, true);
+                }
+                else {
+                    LOGGER.info("Drop was not accepted!");
+                }
             }
             else {
                 event

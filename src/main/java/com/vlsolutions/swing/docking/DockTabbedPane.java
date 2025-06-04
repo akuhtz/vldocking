@@ -43,6 +43,9 @@ import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vlsolutions.swing.docking.event.DockDragEvent;
 import com.vlsolutions.swing.docking.event.DockDropEvent;
 import com.vlsolutions.swing.docking.event.DockEvent;
@@ -82,7 +85,9 @@ import com.vlsolutions.swing.tabbedpane.SmartIconJButton;
  */
 @SuppressWarnings({ "rawtypes", "unchecked", "unused" })
 public class DockTabbedPane extends JTabbedPane
-        implements DockDropReceiver, DockableDragSource, TabbedDockableContainer {
+    implements DockDropReceiver, DockableDragSource, TabbedDockableContainer {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DockTabbedPane.class);
 
     /* no UI for this component, as it is look and feel dependent : we cannot extend BasicTabbedPaneUI */
 
@@ -216,10 +221,10 @@ public class DockTabbedPane extends JTabbedPane
                 if (e.getClickCount() == 2 && SwingUtilities.isLeftMouseButton(e)) {
                     Dockable d = findDockableAt(e);
                     if (d != null && d.getDockKey().isMaximizeEnabled()
-                            && d.getDockKey().getLocation() == DockableState.Location.DOCKED) { // 2005/10/10
-                                                                                                // don't
-                                                                                                // maximize
-                                                                                                // floatings
+                        && d.getDockKey().getLocation() == DockableState.Location.DOCKED) { // 2005/10/10
+                                                                                            // don't
+                                                                                            // maximize
+                                                                                            // floatings
                         desktop.maximize(d);
                     }
                 }
@@ -276,7 +281,7 @@ public class DockTabbedPane extends JTabbedPane
         for (int i = 0; i < getTabCount(); i++) {
             Dockable d = getDockableAt(i);
             if (d != null // 2006/12/07
-                    && d.getDockKey().equals(key)) {
+                && d.getDockKey().equals(key)) {
                 return i;
             }
         }
@@ -1103,6 +1108,11 @@ public class DockTabbedPane extends JTabbedPane
     /** {@inheritDoc} */
     @Override
     public Dockable getDockableAt(int index) {
+        if (index >= getTabCount()) {
+            LOGGER.info("getDockableAt has invalid index: {}, tabCount: {}", index, getTabCount());
+            return null;
+        }
+
         Component c = getComponentAt(index);
         if (c instanceof SingleDockableContainer) {
             return ((SingleDockableContainer) c).getDockable();
