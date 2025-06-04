@@ -1,7 +1,7 @@
 /*
     VLDocking Framework 3.0
     Copyright Lilian Chamontin, 2004-2013
-    
+
     www.vldocking.com
     vldocking@googlegroups.com
 ------------------------------------------------------------------------
@@ -22,25 +22,28 @@ import com.vlsolutions.swing.docking.Dockable;
 import com.vlsolutions.swing.docking.DockableState;
 import com.vlsolutions.swing.docking.DockingDesktop;
 
-/** An event describing a basic state change.
- *<p> 
+/**
+ * An event describing a basic state change.
+ * <p>
  * Baic state changes include :
- *<ul>
- * <li> Maximize/Restore
- * <li> Float (just detach : attach is expressed with split/addDockable/createTab events)
- * <li> Hide (just hide : show is expressed with split/addDockable/createTab events)
- *</ul>
+ * <ul>
+ * <li>Maximize/Restore
+ * <li>Float (just detach : attach is expressed with split/addDockable/createTab events)
+ * <li>Hide (just hide : show is expressed with split/addDockable/createTab events)
+ * </ul>
  *
  * @author Lilian Chamontin, VLSolutions
  */
 public class DockingActionSimpleStateChangeEvent extends DockingActionDockableEvent {
 
-	/** Constructs a new event  */
-	public DockingActionSimpleStateChangeEvent(DockingDesktop desktop, Dockable dockable, DockableState.Location initiallocation, DockableState.Location nextLocation) {
-		super(desktop, dockable, initiallocation, nextLocation, ACTION_STATE_CHANGE);
-	}
+    /** Constructs a new event */
+    public DockingActionSimpleStateChangeEvent(DockingDesktop desktop, Dockable dockable,
+            DockableState.Location initiallocation, DockableState.Location nextLocation) {
+        super(desktop, dockable, initiallocation, nextLocation, ACTION_STATE_CHANGE);
+    }
 
-	public String toString() {
-		return "DockingActionSimpleStateChangeEvent (" + getInitialLocation().name() + " -> " + getNextLocation().name();
-	}
+    public String toString() {
+        return "DockingActionSimpleStateChangeEvent (" + getInitialLocation().name() + " -> "
+                + getNextLocation().name();
+    }
 }

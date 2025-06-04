@@ -1,7 +1,7 @@
 /*
     VLDocking Framework 3.0
     Copyright Lilian Chamontin, 2004-2013
-    
+
     www.vldocking.com
     vldocking@googlegroups.com
 ------------------------------------------------------------------------
@@ -18,106 +18,111 @@ You can read the complete license here :
 
 package com.vlsolutions.swing.docking;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Component;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import javax.swing.JPanel;
 
-/** A Swing panel used as a toolbar for autohide buttons.
+/**
+ * A Swing panel used as a toolbar for autohide buttons.
  *
  * @author Lilian Chamontin, vlsolutions.
  * @version 1.0
- *  */
+ */
 public class AutoHideButtonPanel extends JPanel {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/** The property name associated with the "border" property  */
-	public static final String PROPERTY_BORDERZONE = "borderzone";
+    /** The property name associated with the "border" property */
+    public static final String PROPERTY_BORDERZONE = "borderzone";
 
-	public static final String uiClassID = "AutoHideButtonPanelUI";
+    public static final String uiClassID = "AutoHideButtonPanelUI";
 
-	/** <=> Zone  */
-	private int border;
+    /** <=> Zone */
+    private final int border;
 
-	/** highlight effect (rollover) on the contained buttons */
-	private ButtonHighlighter buttonHighlighter = new ButtonHighlighter();
+    /** highlight effect (rollover) on the contained buttons */
+    private final ButtonHighlighter buttonHighlighter = new ButtonHighlighter();
 
-	/** expansion management  */
-	private AutoHideExpandPanel expandPanel;
+    /** expansion management */
+    private final AutoHideExpandPanel expandPanel;
 
-	/** Constructs a new AutoHideButtonPanel, with a shared expandPanel, and for
-	 * a specified border zone.
-	 *
-	 * @param border constant taken from AutoHideButtonPanel.TOP, AutoHideButtonPanel.LEFT,
-	 * AutoHideButtonPanel.BOTTOM, AutoHideButtonPanel.RIGHT
-	 * */
-	public AutoHideButtonPanel(AutoHideExpandPanel expandPanel, int border) {
-		this.border = border;
-		this.expandPanel = expandPanel;
-		boolean isHorizontal = (border == DockingConstants.INT_HIDE_TOP) || (border == DockingConstants.INT_HIDE_BOTTOM);
-		setLayout(new AutoHideBorderLayout(isHorizontal));
+    /**
+     * Constructs a new AutoHideButtonPanel, with a shared expandPanel, and for a specified border zone.
+     *
+     * @param border
+     *            constant taken from AutoHideButtonPanel.TOP, AutoHideButtonPanel.LEFT,
+     *            AutoHideButtonPanel.BOTTOM, AutoHideButtonPanel.RIGHT
+     */
+    public AutoHideButtonPanel(AutoHideExpandPanel expandPanel, int border) {
+        this.border = border;
+        this.expandPanel = expandPanel;
+        boolean isHorizontal = (border == DockingConstants.INT_HIDE_TOP)
+                || (border == DockingConstants.INT_HIDE_BOTTOM);
+        setLayout(new AutoHideBorderLayout(isHorizontal));
+        setName("AutoHideButtonPanel");
 
-		firePropertyChange("borderzone", - 1, border);
+        firePropertyChange("borderzone", -1, border);
+    }
 
-	}
+    /**
+     * Returns the number of buttons currently displayed by this panel.
+     */
+    public int getVisibleButtonCount() {
+        Component[] comps = getComponents();
+        int count = 0;
+        for (int i = 0; i < comps.length; i++) {
+            if (comps[i].isVisible()) {
+                count++;
+            }
+        }
+        return count;
+    }
 
-	/** Returns the number of buttons currently displayed by this panel.
-	 */
-	public int getVisibleButtonCount() {
-		Component[] comps = getComponents();
-		int count = 0;
-		for(int i = 0; i < comps.length; i++) {
-			if(comps[i].isVisible()) {
-				count++;
-			}
-		}
-		return count;
-	}
+    /**
+     * Returns the border this panel is for.
+     * <p>
+     * Values are : AutoHideButtonPanel.TOP, AutoHideButtonPanel.LEFT, AutoHideButtonPanel.BOTTOM,
+     * AutoHideButtonPanel.RIGHT
+     */
+    public int getBorderZone() {
+        return border;
+    }
 
-	/** Returns the border this panel is for.
-	 * <p>
-	 * Values are : AutoHideButtonPanel.TOP, AutoHideButtonPanel.LEFT,
-	 * AutoHideButtonPanel.BOTTOM, AutoHideButtonPanel.RIGHT
-	 */
-	public int getBorderZone() {
-		return border;
-	}
+    /**
+     * Adds a new AutoHideButton.
+     */
+    public void add(AutoHideButton btn) {
+        add((Component) btn);
 
-	/** Adds a new AutoHideButton.
-	 * */
-	public void add(AutoHideButton btn) {
-		add((Component) btn);
+        btn.addMouseListener(buttonHighlighter);
+        btn.addMouseListener(expandPanel.getControler());
+    }
 
-		btn.addMouseListener(buttonHighlighter);
-		btn.addMouseListener(expandPanel.getControler());
-	}
+    /** Removes an AutoHideButton */
+    public void remove(AutoHideButton btn) {
+        super.remove(btn);
+        btn.removeMouseListener(buttonHighlighter);
+    }
 
-	/** Removes an AutoHideButton */
-	public void remove(AutoHideButton btn) {
-		super.remove(btn);
-		btn.removeMouseListener(buttonHighlighter);
+    private class ButtonHighlighter extends MouseAdapter {
 
-	}
+        public void mouseEntered(MouseEvent e) {
+            AutoHideButton btn = (AutoHideButton) e.getSource();
+            if (!btn.isSelected()) { // selected buttons have their own pain style
+                btn.setHighlighted(true);
+            }
+        }
 
-	private class ButtonHighlighter extends MouseAdapter {
+        public void mouseExited(MouseEvent e) {
+            AutoHideButton btn = (AutoHideButton) e.getSource();
+            if (!btn.isSelected()) { // selected buttons have their own pain style
+                btn.setHighlighted(false);
+            }
+        }
+    }
 
-		public void mouseEntered(MouseEvent e) {
-			AutoHideButton btn = (AutoHideButton) e.getSource();
-			if(! btn.isSelected()) { // selected buttons have their own pain style
-			    btn.setHighlighted(true);
-			}
-		}
-
-		public void mouseExited(MouseEvent e) {
-			AutoHideButton btn = (AutoHideButton) e.getSource();
-			if(! btn.isSelected()) { // selected buttons have their own pain style
-			    btn.setHighlighted(false);
-			}
-		}
-	}
-
-	public String getUIClassID() {
-		return uiClassID;
-	}
-
+    public String getUIClassID() {
+        return uiClassID;
+    }
 }

@@ -1,7 +1,7 @@
 /*
     VLDocking Framework 3.0
     Copyright Lilian Chamontin, 2004-2013
-    
+
     www.vldocking.com
     vldocking@googlegroups.com
 ------------------------------------------------------------------------
@@ -21,7 +21,8 @@ package com.vlsolutions.swing.toolbars;
 import java.awt.Graphics;
 import javax.swing.JComponent;
 
-/** An interface implemented by objects which can paint toolbar backgrounds. 
+/**
+ * An interface implemented by objects which can paint toolbar backgrounds.
  *
  *
  * @author Lilian Chamontin, VLSolutions
@@ -29,6 +30,5 @@ import javax.swing.JComponent;
  */
 public interface BackgroundPainter {
 
-	public void paintBackground(JComponent component, Graphics g);
-
+    void paintBackground(JComponent component, Graphics g);
 }

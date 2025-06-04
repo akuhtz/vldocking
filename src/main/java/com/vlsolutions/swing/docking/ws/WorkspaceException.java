@@ -1,7 +1,7 @@
 /*
     VLDocking Framework 3.0
     Copyright Lilian Chamontin, 2004-2013
-    
+
     www.vldocking.com
     vldocking@googlegroups.com
 ------------------------------------------------------------------------
@@ -18,25 +18,24 @@ You can read the complete license here :
 
 package com.vlsolutions.swing.docking.ws;
 
-/** An exception raised when a workspace operation has gone wrong (can encapsulate 
- * another exception).
+/**
+ * An exception raised when a workspace operation has gone wrong (can encapsulate another exception).
  *
  * @author Lilian Chamontin, VLSolutions
  */
 public class WorkspaceException extends Exception {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public WorkspaceException(String message) {
-		super(message);
-	}
+    public WorkspaceException(String message) {
+        super(message);
+    }
 
-	public WorkspaceException(Exception cause) {
-		super(cause);
-	}
+    public WorkspaceException(Exception cause) {
+        super(cause);
+    }
 
-	public WorkspaceException(String message, Exception cause) {
-		super(message, cause);
-	}
-
+    public WorkspaceException(String message, Exception cause) {
+        super(message, cause);
+    }
 }

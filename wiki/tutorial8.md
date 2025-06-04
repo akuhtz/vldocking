@@ -1,4 +1,4 @@
-# Lesson 8 : Customizing the User Interface 
+# Lesson 8: Customizing the User Interface 
 
 
 This is the 8th part of the VLDocking Framework for Java Swing applications.
@@ -12,10 +12,9 @@ This lesson describes how to change the Look And Feel of VLDocking.
 
 
 VLDocking uses UI delegate classes to paint the look and feel of many of its components.
-Theses classes are dynamically loaded at startup, and use many UI properties to give your application the desired appearance. Here is the list of the current UI delegates :
+These classes are dynamically loaded at startup, and use many UI properties to give your application the desired appearance. Here is the list of the current UI delegates :
 
-
-<table border="1"><thead><tr><th> Component </th><th>UI Delegate class</th></tr></thead>
+<table><thead><tr><th> Component </th><th>UI Delegate class</th></tr></thead>
 <tbody>
 <tr><td>DockView</td><td>com.vlsolutions.swing.docking.ui.DockViewUI</td></tr>
 <tr><td>DockViewTitleBar</td><td>com.vlsolutions.swing.docking.ui.DockViewTitleBarUI</td></tr>
@@ -27,13 +26,12 @@ Theses classes are dynamically loaded at startup, and use many UI properties to 
 </tbody></table>
 
 
-
 ### Replacing UI Delegates 
 
 
 Please note that most UI settings are accessible with UI properties, and thus cas be changed 
 without the need of writing a java class. The only case where you should have to write your own
-UI delegate class is when you want a very different rendering (non rectangular for example). 
+UI delegate class is when you want a very different rendering (non-rectangular, for example). 
 
 
 So, if you need a very different rendering for your dockables, then you will have to provide your custom classes.
@@ -41,25 +39,92 @@ So, if you need a very different rendering for your dockables, then you will hav
 
 Here is how to declare them :
 
+#### Legacy way to declare them
 
- * pre-install the default ui settings in you main() method, or any method prior DockingDesktop usage
+ * pre-install the default ui settings in your `main()` method, or any method prior DockingDesktop usage
  * put your new settings as UIManager properties	
 
 Example :
 
-
 ```java
+import javax.swing.*;
+import com.vlsolutions.swing.docking.ui.DockingUISettings;
+
+public class Main {
     public static void main(String[] args) {
         // first, preload the UI to avoid erasing your own customizations
         DockingUISettings.getInstance().installUI();
         // and start customizing...
+        UIManager.put("DockViewTitleBar.titleFont", UIManager.getFont("Label.font"));
+        UIManager.put("DockViewTitleBar.isCloseButtonDisplayed", false);
         UIManager.put("DockViewTitleBarUI", "your.own.ui.UIDelegateClassName");
         // (replaced the DockViewTitleBar UI by another class)
-        ...
     }
+}
 ```
 
+#### Standard LookAndFeel way
 
+  * Define VLDocking properties in your custom `LookAndFeel#getDefaults`
+  * Set CustomLookAndFeel class name using `UIManager.setLookAndFeel`
+
+```java
+import javax.swing.*;
+
+public class CustomLookAndFeel extends MetalLookAndFeel implements LookAndFeel {
+    public CustomLookAndFeel() {
+        super();
+    }
+    
+    @Override
+    public UIDefaults getDefaults() {
+        UIDefaults config = super.getDefaults();
+        config.put("DockViewTitleBar.titleFont", config.getFont("Label.font"));
+        config.put("DockViewTitleBar.isCloseButtonDisplayed", false);
+        config.put("DockViewTitleBarUI", "your.own.ui.UIDelegateClassName");
+        return config;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        UIManager.setLookAndFeel(new CustomLookAndFeel());
+        DockingUISettings.getInstance().installUI();
+    }
+}
+```
+
+#### Customize with subclass of `DockingUISettings` class
+
+You can provide a subclass of `DockingUISettings` and override the `getDefaults(UIDefaults table)` method.
+The subclass instance should be registered with `DockingUISettings.setInstance` method.
+
+
+```java
+import com.vlsolutions.swing.docking.ui.DockingUISettings;
+
+public class CustomDockingUISettings extends DockingUISettings {
+
+    public CustomDockingUISettings() {
+        super();
+    }
+
+    @Override
+    protected UIDefaults getDefaults(UIDefaults config) {
+        config.put("DockViewTitleBar.titleFont", config.getFont("Label.font"));
+        config.put("DockViewTitleBar.isCloseButtonDisplayed", false);
+        config.put("DockViewTitleBarUI", "your.own.ui.UIDelegateClassName");
+        return super.getDefaults(config);
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        DockingUISettings.setInstance(new CustomDockingUISettings());
+        DockingUISettings.getInstance().installUI();
+    }
+}
+```
 
 ###  Updating the existing UI 
 
@@ -68,11 +133,15 @@ The easiest way to update the UI is by tweaking the UIManager properties.
 For example, if you want a special border for maximized dockable, use : 
 
 ```java
-    // declare your border
-    Border myBorder = ...
-    // put it in the UI property map.
-    UIManager.put("DockView.maximizedDockableBorder", myBorder);
-    // and that's it !
+public class Main {
+    public static void main(String[] args) {
+        // declare your border
+        Border myBorder = new MyBorder();
+        // put it in the UI property map.
+        UIManager.put("DockView.maximizedDockableBorder", myBorder);
+        // and that's it!
+    }
+}
 ```
 
 
@@ -80,23 +149,24 @@ Please note that *to avoid having your own UI settings beeing erased* by the def
 you will have to follow the pattern :
 
 
- * pre-install the default ui settings in you main() method, or any method prior DockingDesktop usage
+ * pre-install the default ui settings in your `main()` method, or any method prior DockingDesktop usage
  * put your new settings as UIManager properties	
 
 
 
 
 ```java
+public class Main {
     public static void main(String[] args) {
         // first, preload the UI to avoid erasing your own customizations
         DockingUISettings.getInstance().installUI();
 
         // declare your border
-        Border myBorder = ...
+        Border myBorder = new MyBorder();
         // and start customizing...
         UIManager.put("DockView.maximizedDockableBorder", myBorder);
-        ...
     }
+}
 ```
 
 Now that you know how to proceed, here is the long list of customizable properties...
@@ -104,8 +174,7 @@ Now that you know how to proceed, here is the long list of customizable properti
 ## Customizable properties  
 ###  Border properties
 
-<table border="1">
-<thead>
+<table><thead>
 <tr><th>UI property</th> <th>type</th> <th>effect</th></tr></thead>
 <tbody>
 <tr><td>DockView.singleDockableBorder</td> <td>Border</td> <td>border used when the DockView is docked alone (not in a tab)</td></tr>
@@ -130,8 +199,7 @@ Now that you know how to proceed, here is the long list of customizable properti
 
 ###  Color properties
 
-<table border="1">
-<thead>
+<table><thead>
 <tr><th>UI property</th> <th>type</th> <th>effect</th></tr></thead>
 <tbody>
 <tr> <td>DockingDesktop.notificationColor</td> <td>Color</td> <td>blinking color for notifications</td></tr>
@@ -139,8 +207,7 @@ Now that you know how to proceed, here is the long list of customizable properti
 
 ###  Icons 
 
-<table border="1">
-<thead>
+<table><thead>
 <tr><th>UI property</th> <th>type</th> <th>effect</th></tr></thead>
 <tbody>
 <tr> <td>DockViewTitleBar.close</td> <td>Icon</td> <td>Icon for the close button</td></tr>
@@ -189,8 +256,7 @@ property must also be set to true</td></tr>
 
 ###  Labels and Fonts 
 
-<table border="1">
-<thead>
+<table><thead>
 <tr><th>UI property</th> <th>type</th> <th>effect</th></tr></thead>
 <tbody>
 <tr> <td>DockViewTitleBar.closeButtonText</td> <td>String</td> <td>Text of the close button</td></tr>
@@ -209,8 +275,7 @@ property must also be set to true</td></tr>
 
 ###  Displaying buttons in title bars 
 
-<table border="1">
-<thead>
+<table><thead>
 <tr><th>UI property</th> <th>type</th> <th>effect</th></tr></thead>
 <tbody>
 <tr> <td>DockViewTitleBar.isCloseButtonDisplayed</td> <td>boolean</td> <td>display or not the close button in the title bar (still accessible from pop-up menu)</td></tr>
@@ -224,8 +289,7 @@ property must also be set to true</td></tr>
 
 ###  KeyStrokes 
 
-<table border="1">
-<thead>
+<table><thead>
 <tr><th>UI property</th> <th>type</th> <th>effect</th></tr></thead>
 <tbody>
 <tr> <td>DockingDesktop.closeActionAccelerator</td> <td>KeyStroke</td> <td>KeyStroke for close action (on selected dockable)</td></tr>
@@ -237,7 +301,7 @@ property must also be set to true</td></tr>
 ###  UI Delegates 
 
 
-<table border="1"><thead><tr><th>UI property</th><th>type</th><th>effect</th></tr></thead><tbody>
+<table><thead><tr><th>UI property</th><th>type</th><th>effect</th></tr></thead><tbody>
 <tr><td>AutoHideButtonUI</td> <td>class name</td> <td>UI delegate for the AutoHideButton</td></tr>
 <tr><td>AutoHideButtonPanelUI</td> <td>class name</td> <td>UI delegate for the AutoHideButtonPanel</td></tr>
 <tr><td>AutoHideExpandPanelUI</td> <td>class name</td> <td>UI delegate for the AutoHideExpandPanel</td></tr>
@@ -254,7 +318,7 @@ property must also be set to true</td></tr>
 Starting from version 2.0.3 it is now possible to change the mouse cursor images used during 
 drag gestures.
 
-<table border="1"><thead><tr><th>UI property</th><th>type</th><th>effect</th></tr></thead><tbody>
+<table><thead><tr><th>UI property</th><th>type</th><th>effect</th></tr></thead><tbody>
 <tr><td>DragControler.stopDragCursor</td> <td>java.awt.Image</td> <td>Image (max 32x32) used when the mouse pointer is above a place where drop is not possible</td></tr>
 <tr><td>DragControler.detachCursor</td> <td>Image</td> <td>Image used to denote a floating action </td></tr>
 <tr><td>DragControler.dragCursor</td> <td>Image</td> <td>Image used (together with a shape) to denote a position where drop is possible</td></tr>
@@ -264,7 +328,7 @@ drag gestures.
 
 ###  Other properties 
 
-<table border="1">
+<table>
 <thead>
 <tr><th>UI property</th> <th>type</th> <th>effect</th></tr></thead>
 <tbody>
@@ -293,8 +357,12 @@ You can choose select between the following provided styles (more to come) with 
 
 
 ```java
-    // version 1.0 style
-    DockingPreferences.setShadowDesktopStyle();
+public class Main {
+    public static void main(String[] args) {
+        // version 1.0 style
+        DockingPreferences.setShadowDesktopStyle();
+    }
+}
 ```
 
  ![](shadowed_style.jpg)
@@ -302,8 +370,12 @@ You can choose select between the following provided styles (more to come) with 
  _The "Shadow Style"_
 
 ```java
-    // or version 1.0 alternative style
-    DockingPreferences.setDottedDesktopStyle();
+public class Main {
+    public static void main(String[] args) {
+        // or version 1.0 alternative style
+        DockingPreferences.setDottedDesktopStyle();
+    }
+}
 ```
 
  ![](dotted_style.jpg)
@@ -311,8 +383,12 @@ You can choose select between the following provided styles (more to come) with 
  _The "Dotted Style"_
 
 ```java
-    // or version 2.0 default style 
-    DockingPreferences.setFlatDesktopStyle();
+public class Main {
+    public static void main(String[] args) {
+        // or version 2.0 default style 
+        DockingPreferences.setFlatDesktopStyle();
+    }
+}
 ```
 
  ![](flat_style.jpg)

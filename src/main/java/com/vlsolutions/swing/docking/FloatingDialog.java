@@ -1,7 +1,7 @@
 /*
     VLDocking Framework 3.0
     Copyright Lilian Chamontin, 2004-2013
-    
+
     www.vldocking.com
     vldocking@googlegroups.com
 ------------------------------------------------------------------------
@@ -38,7 +38,6 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
-
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -48,14 +47,14 @@ import javax.swing.UIManager;
 import javax.swing.border.Border;
 
 /**
- * The floating jdialog for floatable dockables. This is the default implementation of the FloatingDockableContainer
- * interface.
- * 
+ * The floating jdialog for floatable dockables. This is the default implementation of the
+ * FloatingDockableContainer interface.
+ *
  * @author Lilian Chamontin, VLSolutions
  * @since 2.0
- * @update 2005/10/06 Lilian Chamontin : Reworked the layout (added border components) to have better cursor and resize
- *         management and to allow nesting dockables as tabs.
- * 
+ * @update 2005/10/06 Lilian Chamontin : Reworked the layout (added border components) to have better cursor
+ *         and resize management and to allow nesting dockables as tabs.
+ *
  */
 @SuppressWarnings("unused")
 public class FloatingDialog extends JDialog implements FloatingDockableContainer {
@@ -172,7 +171,7 @@ public class FloatingDialog extends JDialog implements FloatingDockableContainer
 
     /**
      * installs the components used for resizing (on left/right/bottom borders)
-     * 
+     *
      * @since 2.0.1
      */
     public void installResizers() { // 2005/10/06
@@ -193,7 +192,6 @@ public class FloatingDialog extends JDialog implements FloatingDockableContainer
         left.setBackground(inactive);
         right.setBackground(inactive);
         bottom.setBackground(inactive);
-
     }
 
     public void installDocking(DockingDesktop desktop) {
@@ -466,5 +464,4 @@ public class FloatingDialog extends JDialog implements FloatingDockableContainer
 	public Border getActiveBorder() {
 		return activeBorder;
 	}
-
 }

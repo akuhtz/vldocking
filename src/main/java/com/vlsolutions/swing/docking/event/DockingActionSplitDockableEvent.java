@@ -1,7 +1,7 @@
 /*
     VLDocking Framework 3.0
     Copyright Lilian Chamontin, 2004-2013
-    
+
     www.vldocking.com
     vldocking@googlegroups.com
 ------------------------------------------------------------------------
@@ -23,42 +23,45 @@ import com.vlsolutions.swing.docking.DockableState;
 import com.vlsolutions.swing.docking.DockingConstants;
 import com.vlsolutions.swing.docking.DockingDesktop;
 
-/** A DockingActionEvent describing a split action (from a base dockable).
+/**
+ * A DockingActionEvent describing a split action (from a base dockable).
  *
  *
  * @author Lilian Chamontin, VLSolutions
- * @since 2.1 
+ * @since 2.1
  */
 public class DockingActionSplitDockableEvent extends DockingActionDockableEvent {
 
-	private Dockable base;
-	private float dividorLocation;
+    private Dockable base;
+    private float dividorLocation;
 
-	private DockingConstants.Split splitPosition;
+    private DockingConstants.Split splitPosition;
 
-	/** Constructs a new event  */
-	public DockingActionSplitDockableEvent(DockingDesktop desktop, Dockable dockable, DockableState.Location initialLocation, DockableState.Location nextLocation, Dockable base, DockingConstants.Split splitPosition, float dividorLocation) {
-		super(desktop, dockable, initialLocation, nextLocation, ACTION_SPLIT_DOCKABLE);
-		this.base = base;
-		this.dividorLocation = dividorLocation;
-		this.splitPosition = splitPosition;
-	}
+    /** Constructs a new event */
+    public DockingActionSplitDockableEvent(DockingDesktop desktop, Dockable dockable,
+            DockableState.Location initialLocation, DockableState.Location nextLocation, Dockable base,
+            DockingConstants.Split splitPosition, float dividorLocation) {
+        super(desktop, dockable, initialLocation, nextLocation, ACTION_SPLIT_DOCKABLE);
+        this.base = base;
+        this.dividorLocation = dividorLocation;
+        this.splitPosition = splitPosition;
+    }
 
-	/** Returns the dockable which will be used as a base for the splitting */
-	public Dockable getBase() {
-		return base;
-	}
+    /** Returns the dockable which will be used as a base for the splitting */
+    public Dockable getBase() {
+        return base;
+    }
 
-	public float getDividorLocation() {
-		return dividorLocation;
-	}
+    public float getDividorLocation() {
+        return dividorLocation;
+    }
 
-	public DockingConstants.Split getSplitPosition() {
-		return splitPosition;
-	}
+    public DockingConstants.Split getSplitPosition() {
+        return splitPosition;
+    }
 
-	public String toString() {
-		return "DockingActionSplitDockableEvent [base:" + base.getDockKey() + ", dockable:" + getDockable().getDockKey() + "]";
-	}
-
+    public String toString() {
+        return "DockingActionSplitDockableEvent [base:" + base.getDockKey() + ", dockable:"
+                + getDockable().getDockKey() + "]";
+    }
 }

@@ -1,7 +1,7 @@
 /*
     VLDocking Framework 3.0
     Copyright Lilian Chamontin, 2004-2013
-    
+
     www.vldocking.com
     vldocking@googlegroups.com
 ------------------------------------------------------------------------
@@ -98,11 +98,12 @@ import javax.swing.UIManager;
  * </table>
  *
  * <p>
- * The buttons managed have no effect on the state of the dockable : they just fire property change events, and it is
- * the responsibility of the DockableContainer to listen to those events and to relay the operation to the docking
- * desktop.
+ * The buttons managed have no effect on the state of the dockable : they just fire property change events,
+ * and it is the responsibility of the DockableContainer to listen to those events and to relay the operation
+ * to the docking desktop.
  * <p>
- * Note : the UI Delegate of the DockViewTitleBar is the {@link com.vlsolutions.swing.docking.ui.DockViewTitleBarUI}
+ * Note : the UI Delegate of the DockViewTitleBar is the
+ * {@link com.vlsolutions.swing.docking.ui.DockViewTitleBarUI}
  *
  * @author Lilian Chamontin, vlsolutions.
  * @version 1.0
@@ -289,10 +290,10 @@ public class DockViewTitleBar extends JPanel implements DockableDragSource {
              * else if (pName.equals(DockKey.PROPERTY_DOCKABLE_STATE)){
              *
              * int newState = ((Integer)e.getNewValue()).intValue(); int oldState =
-             * ((Integer)e.getOldValue()).intValue(); switch (newState){ case DockableState.HIDDEN : setAutoHide(true);
-             * break; case DockableState.MAXIMIZED : setMaximized(true); break; case DockableState.DOCKED : if (oldState
-             * == DockableState.HIDDEN){ setAutoHide(false); } break; default: //@todo : managed the floatable state //
-             * nothing to track here } }
+             * ((Integer)e.getOldValue()).intValue(); switch (newState){ case DockableState.HIDDEN :
+             * setAutoHide(true); break; case DockableState.MAXIMIZED : setMaximized(true); break; case
+             * DockableState.DOCKED : if (oldState == DockableState.HIDDEN){ setAutoHide(false); } break;
+             * default: //@todo : managed the floatable state // nothing to track here } }
              */
         }
     };
@@ -316,12 +317,20 @@ public class DockViewTitleBar extends JPanel implements DockableDragSource {
     /**
      * Constructs a title bar for the specified dockable.
      * <p>
-     * Warning : a DockViewTitleBar can be used with multiple dockables (this is the case for example in autohide
-     * borders, where a single titlebar is shared by all hidden dockables (shown only when one is expanding).
+     * Warning : a DockViewTitleBar can be used with multiple dockables (this is the case for example in
+     * autohide borders, where a single titlebar is shared by all hidden dockables (shown only when one is
+     * expanding).
      */
     public DockViewTitleBar(Dockable dockable) {
         setDockable(dockable);
 
+        setName("DockViewTitleBar");
+        titleLabel.setName("TitleLabel");
+
+        closeButton.setName("CloseButton");
+        dockButton.setName("DockButton");
+        maximizeButton.setName("MaximizeButton");
+        floatButton.setName("FloatButton");
         closeButton.setText("");
         dockButton.setText("");
         maximizeButton.setText("");
@@ -372,14 +381,13 @@ public class DockViewTitleBar extends JPanel implements DockableDragSource {
                 k.removePropertyChangeListener(dockKeyListener);// 2007/04/16
             }
         }
-
     }
 
     /**
      * Returns the label used to display the dockkey name.
      * <p>
-     * Shouldn't be used to update the title : the best way is to update the DockKey (property listener ensure the
-     * labels and buttons stay in sync).
+     * Shouldn't be used to update the title : the best way is to update the DockKey (property listener ensure
+     * the labels and buttons stay in sync).
      *
      * @since 2.0
      */
@@ -463,8 +471,8 @@ public class DockViewTitleBar extends JPanel implements DockableDragSource {
             // we don't really change the maximized property,
             // which will be updated if the desktop accepts this maximization
             /*
-             * We do not use fireVetoableChange, to keep maximization processing outside the title bar (everything is
-             * driven par the dockingdesktop and the SingleDockableContainer
+             * We do not use fireVetoableChange, to keep maximization processing outside the title bar
+             * (everything is driven par the dockingdesktop and the SingleDockableContainer
              */
             firePropertyChange(PROPERTY_MAXIMIZED, old, !old);
         }
@@ -484,8 +492,8 @@ public class DockViewTitleBar extends JPanel implements DockableDragSource {
     }
 
     /**
-     * This method is invoked to hide the pop-up that could still be visible (To avoid a visible pop-up for an invisible
-     * component)
+     * This method is invoked to hide the pop-up that could still be visible (To avoid a visible pop-up for an
+     * invisible component)
      */
     public void closePopUp() {
         if (currentPopUp != null) {
@@ -508,16 +516,16 @@ public class DockViewTitleBar extends JPanel implements DockableDragSource {
     /**
      * Returns true if the dockable is the currently active one.
      * <p>
-     * There is at most one active dockable for a dekstop, and it there is one, it is the one which contains the keybord
-     * focused component.
+     * There is at most one active dockable for a dekstop, and it there is one, it is the one which contains
+     * the keybord focused component.
      */
     public boolean isActive() {
         return active;
     }
 
     /**
-     * Updates the active property. A title bar is active when the dockable it is for is ancestor of the keybord focused
-     * component.
+     * Updates the active property. A title bar is active when the dockable it is for is ancestor of the
+     * keybord focused component.
      */
     public void setActive(boolean active) {
         boolean old = this.active;
@@ -552,7 +560,6 @@ public class DockViewTitleBar extends JPanel implements DockableDragSource {
              */
 
             key.addPropertyChangeListener(dockKeyListener);
-
         }
         firePropertyChange("dockable", old, dockable);
     }
@@ -609,8 +616,8 @@ public class DockViewTitleBar extends JPanel implements DockableDragSource {
         }
     }
 
-    private JMenuItem createPopUpItem(
-        String text, Icon icon, String tooltip, String actionCommand, KeyStroke accelerator) {
+    private JMenuItem createPopUpItem(String text, Icon icon, String tooltip, String actionCommand,
+            KeyStroke accelerator) {
         JMenuItem menuItem = new JMenuItem(text, icon);
         menuItem.setActionCommand(actionCommand);
         menuItem.addActionListener(actionListener);
@@ -639,6 +646,7 @@ public class DockViewTitleBar extends JPanel implements DockableDragSource {
                 break;
             default:
                 // nothing to do
+                break;
         }
 
         DockableActionCustomizer customizer = target.getDockKey().getActionCustomizer();
@@ -657,8 +665,7 @@ public class DockViewTitleBar extends JPanel implements DockableDragSource {
     /** Init the popup displayed as the title bar contextual menu */
     protected void initMaximizedPopUp(JPopupMenu popup) {
 
-        popup
-            .add(createPopUpItem(RESTORE_TEXT, restoreIcon, RESTORE_TEXT, "maximize",
+        popup.add(createPopUpItem(RESTORE_TEXT, restoreIcon, RESTORE_TEXT, "maximize",
                 (KeyStroke) UIManager.get("DockingDesktop.maximizeActionAccelerator")));
     }
 
@@ -818,9 +825,9 @@ public class DockViewTitleBar extends JPanel implements DockableDragSource {
             }
 
             /*
-             * // try to find if the component taking the focus is the ancestor if (activeTitleBar != null){ Container
-             * parent = activeTitleBar.getParent(); if (parent != null && c != null && parent.isAncestorOf(c)) { if
-             * (!active) { setActive(true); } // reset notification (blinking)
+             * // try to find if the component taking the focus is the ancestor if (activeTitleBar != null){
+             * Container parent = activeTitleBar.getParent(); if (parent != null && c != null &&
+             * parent.isAncestorOf(c)) { if (!active) { setActive(true); } // reset notification (blinking)
              * target.getDockKey().setNotification(false); } else if (active) { setActive(false); }
              */
         }

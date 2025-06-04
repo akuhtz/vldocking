@@ -1,0 +1,16 @@
+[versions]
+slf4j = { strictly = "[2.0.7, 2.1[", prefer = "2.0.7" }
+junit = "4.13.2"
+logback = "1.5.8"
+assertj = "4.0.0-beta-2"
+
+[libraries]
+slf4j-api = {group = "org.slf4j", name = "slf4j-api",  version.ref = "slf4j"}
+junit4 = {group = "junit", name = "junit", version.ref = "junit"}
+logback = {group = "ch.qos.logback", name = "logback-classic", version.ref = "logback"}
+assertj-swing-junit = {group = "tokyo.northside", name = "assertj-swing-junit", version.ref = "assertj"}
+
+[plugins]
+nexus-publish = {id = "io.github.gradle-nexus.publish-plugin", version = "2.0.0"}
+spotbugs = {id = "com.github.spotbugs", version = "6.0.9"}
+spotless = {id = "com.diffplug.spotless", version = "6.25.0"}

@@ -1,7 +1,7 @@
 /*
     VLDocking Framework 3.0
     Copyright Lilian Chamontin, 2004-2013
-    
+
     www.vldocking.com
     vldocking@googlegroups.com
 ------------------------------------------------------------------------
@@ -27,302 +27,326 @@ import java.awt.event.MouseMotionListener;
 import javax.swing.Icon;
 import javax.swing.JTabbedPane;
 
-/** This class is the interface between a JTabbedPane and a smart icon.
- *<p>
- * As JTabbedPanes cannot use any JComponents as tab selectors (the access if protected and we just have
- * a label, an icon and a tooltip), we have to rely on tricks to bypass them. 
+/**
+ * This class is the interface between a JTabbedPane and a smart icon.
  * <p>
- * This class is used (with a mouse listener) to forward events into the smart icon. which is responsible
- * for faking an enhanced tab selector (including label and optional buttons).
+ * As JTabbedPanes cannot use any JComponents as tab selectors (the access if protected and we just have a
+ * label, an icon and a tooltip), we have to rely on tricks to bypass them.
+ * <p>
+ * This class is used (with a mouse listener) to forward events into the smart icon. which is responsible for
+ * faking an enhanced tab selector (including label and optional buttons).
  *
  *
  * @author Lilian Chamontin, VLSolutions
  */
 public class JTabbedPaneSmartIconManager implements MouseListener, MouseMotionListener {
 
-	private JTabbedPane tabbedPane;
+    private JTabbedPane tabbedPane;
 
-	private JTabbedPaneSmartIcon pressedIcon;
-	private int pressedTab; // the tab associated to the pressed icon  
+    private JTabbedPaneSmartIcon pressedIcon;
+    private int pressedTab; // the tab associated to the pressed icon
 
-	private JTabbedPaneSmartIcon movedIcon;
-	private int movedTab;
+    private JTabbedPaneSmartIcon movedIcon;
+    private int movedTab;
 
-	/** Constructs a new tabbedPane manager for a given JTabbedPane */
-	public JTabbedPaneSmartIconManager(JTabbedPane tabbedPane) {
-		this.tabbedPane = tabbedPane;
-		tabbedPane.addMouseListener(this);
-		tabbedPane.addMouseMotionListener(this);
-	}
+    /** Constructs a new tabbedPane manager for a given JTabbedPane */
+    public JTabbedPaneSmartIconManager(JTabbedPane tabbedPane) {
+        this.tabbedPane = tabbedPane;
+        tabbedPane.addMouseListener(this);
+        tabbedPane.addMouseMotionListener(this);
+    }
 
-	/** MouseListener implementation, use to track mouse behaviour inside the tab selector bounds
-	 * and forward them to the appropriate smart icon.
-	 */
-	public void mouseReleased(MouseEvent e) {
-		checkTabCount();
-		// forward the event to the pressed smart icon
-		if(pressedIcon != null) {
-			Point p = e.getPoint();
+    /**
+     * MouseListener implementation, use to track mouse behaviour inside the tab selector bounds and forward
+     * them to the appropriate smart icon.
+     */
+    public void mouseReleased(MouseEvent e) {
+        checkTabCount();
+        // forward the event to the pressed smart icon
+        if (pressedIcon != null) {
+            Point p = e.getPoint();
 
-			final Rectangle r = tabbedPane.getBoundsAt(pressedTab);
-			if (r == null) {
-				return;
-			}
-			Point iPoint = convertPointToIcon(r, p, pressedIcon);
+            final Rectangle r = tabbedPane.getBoundsAt(pressedTab);
+            if (r == null) {
+                return;
+            }
+            Point iPoint = convertPointToIcon(r, p, pressedIcon);
 
-			final MouseEvent eSmart = new MouseEvent((Component) e.getSource(), e.getID(), e.getWhen(), e.getModifiers(), iPoint.x, iPoint.y, e.getClickCount(), e.isPopupTrigger(), e.getButton());
-			try {
-				if(pressedIcon.onMouseReleased(eSmart)) {
-					tabbedPane.repaint(r.x, r.y, r.width, r.height); // no choice but trigger a repaint        
-				}
-			} catch(Exception ignore) { // bug database : 5075526 this is to remove the stack trace        
-			}
-			pressedIcon = null;
-		}
-	}
+            final MouseEvent eSmart = new MouseEvent((Component) e.getSource(), e.getID(), e.getWhen(),
+                    e.getModifiers(), iPoint.x, iPoint.y, e.getClickCount(), e.isPopupTrigger(),
+                    e.getButton());
+            try {
+                if (pressedIcon.onMouseReleased(eSmart)) {
+                    tabbedPane.repaint(r.x, r.y, r.width, r.height); // no choice but trigger a repaint
+                }
+            } catch (Exception ignore) { // bug database : 5075526 this is to remove the stack trace
+            }
+            pressedIcon = null;
+        }
+    }
 
-	private Point convertPointToIcon(Rectangle r, Point p, Icon icon) {
-		int x = p.x - (r.x + r.width / 2 - icon.getIconWidth() / 2);
-		int y = p.y - (r.y + r.height / 2 - icon.getIconHeight() / 2);
-		return new Point(x, y);
-	}
+    private Point convertPointToIcon(Rectangle r, Point p, Icon icon) {
+        int x = p.x - (r.x + r.width / 2 - icon.getIconWidth() / 2);
+        int y = p.y - (r.y + r.height / 2 - icon.getIconHeight() / 2);
+        return new Point(x, y);
+    }
 
-	/** MouseListener implementation, use to track mouse behaviour inside the tab selector bounds
-	 * and forward them to the appropriate smart icon.
-	 */
-	public void mousePressed(MouseEvent e) {
-		// where is the mouse pressed ?
-		Point p = e.getPoint();
+    /**
+     * MouseListener implementation, use to track mouse behaviour inside the tab selector bounds and forward
+     * them to the appropriate smart icon.
+     */
+    public void mousePressed(MouseEvent e) {
+        // where is the mouse pressed ?
+        Point p = e.getPoint();
 
-		this.pressedIcon = null; // reset the pressed state
+        this.pressedIcon = null; // reset the pressed state
 
-		int targetTab = findTabAt(p);
-		if(targetTab != - 1) {
-			Icon icon = tabbedPane.getIconAt(targetTab);
-			if(icon instanceof JTabbedPaneSmartIcon) {
-				JTabbedPaneSmartIcon smartIcon = (JTabbedPaneSmartIcon) icon;
-				// convert point into smartIcon coordinates
+        int targetTab = findTabAt(p);
+        if (targetTab != -1) {
+            Icon icon = tabbedPane.getIconAt(targetTab);
+            if (icon instanceof JTabbedPaneSmartIcon) {
+                JTabbedPaneSmartIcon smartIcon = (JTabbedPaneSmartIcon) icon;
+                // convert point into smartIcon coordinates
 
-				// get the tab bounds
-				Rectangle r = tabbedPane.getBoundsAt(targetTab);
-				if (r == null) {
-					return;
-				}
+                // get the tab bounds
+                Rectangle r = tabbedPane.getBoundsAt(targetTab);
+                if (r == null) {
+                    return;
+                }
 
-				// as the icon is the only thing visible, we consider it centered in the tab
-				// (which is the default paint behaviour of BasicTabbedPaneUI, and should be okay
-				// with most look and feels.
-				int x = p.x - (r.x + r.width / 2 - icon.getIconWidth() / 2);
-				int y = p.y - (r.y + r.height / 2 - icon.getIconHeight() / 2);
-				if(x >= 0 && y >= 0 && x < icon.getIconWidth() && y < icon.getIconHeight()) {
-					// forward the event to the smart icon
-					MouseEvent eSmart = new MouseEvent((Component) e.getSource(), e.getID(), e.getWhen(), e.getModifiers(), x, y, e.getClickCount(), e.isPopupTrigger(), e.getButton());
-					if(smartIcon.onMousePressed(eSmart)) {
-						tabbedPane.repaint(r.x, r.y, r.width, r.height); // no choice but trigger a repaint          
-					}
-					pressedIcon = smartIcon;
-					pressedTab = targetTab;
-				}
-			}
-		}
-	}
+                // as the icon is the only thing visible, we consider it centered in the tab
+                // (which is the default paint behaviour of BasicTabbedPaneUI, and should be okay
+                // with most look and feels.
+                int x = p.x - (r.x + r.width / 2 - icon.getIconWidth() / 2);
+                int y = p.y - (r.y + r.height / 2 - icon.getIconHeight() / 2);
+                if (x >= 0 && y >= 0 && x < icon.getIconWidth() && y < icon.getIconHeight()) {
+                    // forward the event to the smart icon
+                    MouseEvent eSmart = new MouseEvent((Component) e.getSource(), e.getID(), e.getWhen(),
+                            e.getModifiers(), x, y, e.getClickCount(), e.isPopupTrigger(), e.getButton());
+                    if (smartIcon.onMousePressed(eSmart)) {
+                        tabbedPane.repaint(r.x, r.y, r.width, r.height); // no choice but trigger a repaint
+                    }
+                    pressedIcon = smartIcon;
+                    pressedTab = targetTab;
+                }
+            }
+        }
+    }
 
-	/** verify if the tab count hasn't changed. 
-	 *<p>
-	 * There is always the risk that the last tab has been removed (and movedTab will be
-	 * out of bounds)
-	 *
-	 */
-	private void checkTabCount() {
-		if(movedTab >= tabbedPane.getTabCount()) { // too late : tab has been removed
-			movedTab = - 1;
-			movedIcon = null;
-		}
-		if(pressedTab >= tabbedPane.getTabCount()) {
-			pressedTab = - 1;
-			pressedIcon = null;
-		}
-	}
+    /**
+     * verify if the tab count hasn't changed.
+     * <p>
+     * There is always the risk that the last tab has been removed (and movedTab will be out of bounds)
+     *
+     */
+    private void checkTabCount() {
+        if (movedTab >= tabbedPane.getTabCount()) { // too late : tab has been removed
+            movedTab = -1;
+            movedIcon = null;
+        }
+        if (pressedTab >= tabbedPane.getTabCount()) {
+            pressedTab = -1;
+            pressedIcon = null;
+        }
+    }
 
-	private int findTabAt(Point p) {
-		int x = p.x;
-		int y = p.y;
-		for(int i = 0; i < tabbedPane.getTabCount(); i++) {
-			Rectangle bounds = tabbedPane.getBoundsAt(i);
-			if(bounds != null && bounds.contains(x, y)) {
-				return i;
-			}
-		}
-		return - 1;
-	}
+    private int findTabAt(Point p) {
+        int x = p.x;
+        int y = p.y;
+        for (int i = 0; i < tabbedPane.getTabCount(); i++) {
+            Rectangle bounds = tabbedPane.getBoundsAt(i);
+            if (bounds != null && bounds.contains(x, y)) {
+                return i;
+            }
+        }
+        return -1;
+    }
 
-	/** MouseListener implementation, use to track mouse behaviour inside the tab selector bounds
-	 * and forward them to the appropriate smart icon.
-	 */
-	public void mouseMoved(MouseEvent e) {
-		checkTabCount();
+    /**
+     * MouseListener implementation, use to track mouse behaviour inside the tab selector bounds and forward
+     * them to the appropriate smart icon.
+     */
+    public void mouseMoved(MouseEvent e) {
+        checkTabCount();
 
-		// where is the mouse moved ?
-		Point p = e.getPoint();
+        // where is the mouse moved ?
+        Point p = e.getPoint();
 
-		int targetTab = findTabAt(p);
-		if(targetTab != - 1) {
-			Icon icon = tabbedPane.getIconAt(targetTab);
-			if(icon instanceof JTabbedPaneSmartIcon) {
-				JTabbedPaneSmartIcon smartIcon = (JTabbedPaneSmartIcon) icon;
-				if(movedIcon != null && movedIcon != smartIcon) {
-					// trigger a mouseExit from the movedIcon
-					Rectangle prevRect = tabbedPane.getBoundsAt(movedTab);
-					if (prevRect == null) {
-						return;
-					}
-					Point iPoint = convertPointToIcon(prevRect, p, movedIcon);
-					MouseEvent eSmart = new MouseEvent((Component) e.getSource(), MouseEvent.MOUSE_EXITED, e.getWhen(), e.getModifiers(), iPoint.x, iPoint.y, e.getClickCount(), e.isPopupTrigger(), e.getButton());
-					if(movedIcon.onMouseExited(eSmart)) {
-						String tip = movedIcon.getLocalTooltipText();
-						if(tip != null && ! tip.equals(tabbedPane.getToolTipTextAt(targetTab))) {
-							tabbedPane.setToolTipTextAt(targetTab, tip);
-						}
-						//            tabbedPane.repaint(prevRect.x, prevRect.y, prevRect.width, prevRect.height); 
-						tabbedPane.revalidate();
-						tabbedPane.repaint();
-					}
-					movedIcon = null;
-					movedTab = - 1;
-				}
+        int targetTab = findTabAt(p);
+        if (targetTab != -1) {
+            Icon icon = tabbedPane.getIconAt(targetTab);
+            if (icon instanceof JTabbedPaneSmartIcon) {
+                JTabbedPaneSmartIcon smartIcon = (JTabbedPaneSmartIcon) icon;
+                if (movedIcon != null && movedIcon != smartIcon) {
+                    // trigger a mouseExit from the movedIcon
+                    Rectangle prevRect = tabbedPane.getBoundsAt(movedTab);
+                    if (prevRect == null) {
+                        return;
+                    }
+                    Point iPoint = convertPointToIcon(prevRect, p, movedIcon);
+                    MouseEvent eSmart = new MouseEvent((Component) e.getSource(), MouseEvent.MOUSE_EXITED,
+                            e.getWhen(), e.getModifiers(), iPoint.x, iPoint.y, e.getClickCount(),
+                            e.isPopupTrigger(), e.getButton());
+                    if (movedIcon.onMouseExited(eSmart)) {
+                        String tip = movedIcon.getLocalTooltipText();
+                        if (tip != null && !tip.equals(tabbedPane.getToolTipTextAt(targetTab))) {
+                            tabbedPane.setToolTipTextAt(targetTab, tip);
+                        }
+                        // tabbedPane.repaint(prevRect.x, prevRect.y, prevRect.width, prevRect.height);
+                        tabbedPane.revalidate();
+                        tabbedPane.repaint();
+                    }
+                    movedIcon = null;
+                    movedTab = -1;
+                }
 
-				// convert point into smartIcon coordinates
-				// get the tab bounds
-				Rectangle r = tabbedPane.getBoundsAt(targetTab);
-				if (r == null) {
-					return;
-				}
-				Point iPoint = convertPointToIcon(r, p, icon);
+                // convert point into smartIcon coordinates
+                // get the tab bounds
+                Rectangle r = tabbedPane.getBoundsAt(targetTab);
+                if (r == null) {
+                    return;
+                }
+                Point iPoint = convertPointToIcon(r, p, icon);
 
-				if(iPoint.x >= 0 && iPoint.y >= 0 && iPoint.x < icon.getIconWidth() && iPoint.y < icon.getIconHeight()) {
-					// forward the event to the smart icon
-					MouseEvent eSmart = new MouseEvent((Component) e.getSource(), e.getID(), e.getWhen(), e.getModifiers(), iPoint.x, iPoint.y, e.getClickCount(), e.isPopupTrigger(), e.getButton());
-					if(smartIcon.onMouseMoved(eSmart)) {
-						String tip = smartIcon.getLocalTooltipText();
-						if(tip != null && ! tip.equals(tabbedPane.getToolTipTextAt(targetTab))) {
-							tabbedPane.setToolTipTextAt(targetTab, tip);
-						}
-						tabbedPane.revalidate();
-						tabbedPane.repaint();
-						//            tabbedPane.repaint(r.x, r.y, r.width, r.height); 
-					}
-					movedIcon = smartIcon;
-					movedTab = targetTab;
-				} else { // in tab, but not on icon
-					if(movedIcon != null) {
-						// trigger a mouseExit from the movedIcon
-						Rectangle prevRect = tabbedPane.getBoundsAt(movedTab);
-						if (prevRect == null) {
-							return;
-						}
-						iPoint = convertPointToIcon(prevRect, p, movedIcon);
-						MouseEvent eSmart = new MouseEvent((Component) e.getSource(), MouseEvent.MOUSE_EXITED, e.getWhen(), e.getModifiers(), iPoint.x, iPoint.y, e.getClickCount(), e.isPopupTrigger(), e.getButton());
-						if(movedIcon.onMouseExited(eSmart)) {
-							String tip = movedIcon.getLocalTooltipText();
-							if(tip != null && ! tip.equals(tabbedPane.getToolTipTextAt(targetTab))) {
-								tabbedPane.setToolTipTextAt(targetTab, tip);
-							}
+                if (iPoint.x >= 0 && iPoint.y >= 0 && iPoint.x < icon.getIconWidth()
+                        && iPoint.y < icon.getIconHeight()) {
+                    // forward the event to the smart icon
+                    MouseEvent eSmart = new MouseEvent((Component) e.getSource(), e.getID(), e.getWhen(),
+                            e.getModifiers(), iPoint.x, iPoint.y, e.getClickCount(), e.isPopupTrigger(),
+                            e.getButton());
+                    if (smartIcon.onMouseMoved(eSmart)) {
+                        String tip = smartIcon.getLocalTooltipText();
+                        if (tip != null && !tip.equals(tabbedPane.getToolTipTextAt(targetTab))) {
+                            tabbedPane.setToolTipTextAt(targetTab, tip);
+                        }
+                        tabbedPane.revalidate();
+                        tabbedPane.repaint();
+                        // tabbedPane.repaint(r.x, r.y, r.width, r.height);
+                    }
+                    movedIcon = smartIcon;
+                    movedTab = targetTab;
+                } else { // in tab, but not on icon
+                    if (movedIcon != null) {
+                        // trigger a mouseExit from the movedIcon
+                        Rectangle prevRect = tabbedPane.getBoundsAt(movedTab);
+                        if (prevRect == null) {
+                            return;
+                        }
+                        iPoint = convertPointToIcon(prevRect, p, movedIcon);
+                        MouseEvent eSmart = new MouseEvent((Component) e.getSource(), MouseEvent.MOUSE_EXITED,
+                                e.getWhen(), e.getModifiers(), iPoint.x, iPoint.y, e.getClickCount(),
+                                e.isPopupTrigger(), e.getButton());
+                        if (movedIcon.onMouseExited(eSmart)) {
+                            String tip = movedIcon.getLocalTooltipText();
+                            if (tip != null && !tip.equals(tabbedPane.getToolTipTextAt(targetTab))) {
+                                tabbedPane.setToolTipTextAt(targetTab, tip);
+                            }
 
-							tabbedPane.revalidate();
-							tabbedPane.repaint();
-							//            tabbedPane.repaint(prevRect.x, prevRect.y, prevRect.width, prevRect.height); 
-						}
-					}
-					movedIcon = null;
-					movedTab = - 1;
-				}
-			} else { // not a smart icon ? 
-				if(movedIcon != null) {
-					// trigger a mouseExit from the movedIcon
-					Rectangle prevRect = tabbedPane.getBoundsAt(movedTab);
-					if (prevRect == null) {
-						return;
-					}
-					Point iPoint = convertPointToIcon(prevRect, p, movedIcon);
-					MouseEvent eSmart = new MouseEvent((Component) e.getSource(), MouseEvent.MOUSE_EXITED, e.getWhen(), e.getModifiers(), iPoint.x, iPoint.y, e.getClickCount(), e.isPopupTrigger(), e.getButton());
-					if(movedIcon.onMouseExited(eSmart)) {
-						String tip = movedIcon.getLocalTooltipText();
-						if(tip != null && ! tip.equals(tabbedPane.getToolTipTextAt(targetTab))) {
-							tabbedPane.setToolTipTextAt(targetTab, tip);
-						}
+                            tabbedPane.revalidate();
+                            tabbedPane.repaint();
+                            // tabbedPane.repaint(prevRect.x, prevRect.y, prevRect.width, prevRect.height);
+                        }
+                    }
+                    movedIcon = null;
+                    movedTab = -1;
+                }
+            } else { // not a smart icon ?
+                if (movedIcon != null) {
+                    // trigger a mouseExit from the movedIcon
+                    Rectangle prevRect = tabbedPane.getBoundsAt(movedTab);
+                    if (prevRect == null) {
+                        return;
+                    }
+                    Point iPoint = convertPointToIcon(prevRect, p, movedIcon);
+                    MouseEvent eSmart = new MouseEvent((Component) e.getSource(), MouseEvent.MOUSE_EXITED,
+                            e.getWhen(), e.getModifiers(), iPoint.x, iPoint.y, e.getClickCount(),
+                            e.isPopupTrigger(), e.getButton());
+                    if (movedIcon.onMouseExited(eSmart)) {
+                        String tip = movedIcon.getLocalTooltipText();
+                        if (tip != null && !tip.equals(tabbedPane.getToolTipTextAt(targetTab))) {
+                            tabbedPane.setToolTipTextAt(targetTab, tip);
+                        }
 
-						tabbedPane.revalidate();
-						tabbedPane.repaint();
-						//          tabbedPane.repaint(prevRect.x, prevRect.y, prevRect.width, prevRect.height); 
-					}
-					movedIcon = null;
-					movedTab = - 1;
-				}
-			}
-		} else { // not on a tab
-			if(movedIcon != null) {
-				// trigger a mouseExit from the movedIcon
-				Rectangle prevRect = tabbedPane.getBoundsAt(movedTab);
-				if (prevRect == null) {
-					return;
-				}
-				Point iPoint = convertPointToIcon(prevRect, p, movedIcon);
-				MouseEvent eSmart = new MouseEvent((Component) e.getSource(), MouseEvent.MOUSE_EXITED, e.getWhen(), e.getModifiers(), iPoint.x, iPoint.y, e.getClickCount(), e.isPopupTrigger(), e.getButton());
-				if(movedIcon.onMouseExited(eSmart)) {
-					String tip = movedIcon.getLocalTooltipText();
-					if(tip != null && ! tip.equals(tabbedPane.getToolTipTextAt(movedTab))) {
-						tabbedPane.setToolTipTextAt(movedTab, tip);
-					}
+                        tabbedPane.revalidate();
+                        tabbedPane.repaint();
+                        // tabbedPane.repaint(prevRect.x, prevRect.y, prevRect.width, prevRect.height);
+                    }
+                    movedIcon = null;
+                    movedTab = -1;
+                }
+            }
+        } else { // not on a tab
+            if (movedIcon != null) {
+                // trigger a mouseExit from the movedIcon
+                Rectangle prevRect = tabbedPane.getBoundsAt(movedTab);
+                if (prevRect == null) {
+                    return;
+                }
+                Point iPoint = convertPointToIcon(prevRect, p, movedIcon);
+                MouseEvent eSmart = new MouseEvent((Component) e.getSource(), MouseEvent.MOUSE_EXITED,
+                        e.getWhen(), e.getModifiers(), iPoint.x, iPoint.y, e.getClickCount(),
+                        e.isPopupTrigger(), e.getButton());
+                if (movedIcon.onMouseExited(eSmart)) {
+                    String tip = movedIcon.getLocalTooltipText();
+                    if (tip != null && !tip.equals(tabbedPane.getToolTipTextAt(movedTab))) {
+                        tabbedPane.setToolTipTextAt(movedTab, tip);
+                    }
 
-					tabbedPane.revalidate();
-					tabbedPane.repaint();
-					//        tabbedPane.repaint(prevRect.x, prevRect.y, prevRect.width, prevRect.height); 
-				}
-				movedIcon = null;
-				movedTab = - 1;
-			}
-		}
+                    tabbedPane.revalidate();
+                    tabbedPane.repaint();
+                    // tabbedPane.repaint(prevRect.x, prevRect.y, prevRect.width, prevRect.height);
+                }
+                movedIcon = null;
+                movedTab = -1;
+            }
+        }
+    }
 
-	}
+    /**
+     * MouseListener implementation, use to track mouse behaviour inside the tab selector bounds and forward
+     * them to the appropriate smart icon.
+     */
+    public void mouseExited(MouseEvent e) {
+        checkTabCount();
+        if (movedIcon != null) {
+            Point p = e.getPoint();
+            // trigger a mouseExit from the movedIcon
+            Rectangle prevRect = tabbedPane.getBoundsAt(movedTab);
+            if (prevRect == null) {
+                return;
+            }
+            Point iPoint = convertPointToIcon(prevRect, p, movedIcon);
+            MouseEvent eSmart = new MouseEvent((Component) e.getSource(), MouseEvent.MOUSE_EXITED,
+                    e.getWhen(), e.getModifiers(), iPoint.x, iPoint.y, e.getClickCount(), e.isPopupTrigger(),
+                    e.getButton());
+            if (movedIcon.onMouseExited(eSmart)) {
+                String tip = movedIcon.getLocalTooltipText();
+                if (tip != null && !tip.equals(tabbedPane.getToolTipTextAt(movedTab))) {
+                    tabbedPane.setToolTipTextAt(movedTab, tip);
+                }
 
-	/** MouseListener implementation, use to track mouse behaviour inside the tab selector bounds
-	 * and forward them to the appropriate smart icon.
-	 */
-	public void mouseExited(MouseEvent e) {
-		checkTabCount();
-		if(movedIcon != null) {
-			Point p = e.getPoint();
-			// trigger a mouseExit from the movedIcon
-			Rectangle prevRect = tabbedPane.getBoundsAt(movedTab);
-			if (prevRect == null) {
-				return;
-			}
-			Point iPoint = convertPointToIcon(prevRect, p, movedIcon);
-			MouseEvent eSmart = new MouseEvent((Component) e.getSource(), MouseEvent.MOUSE_EXITED, e.getWhen(), e.getModifiers(), iPoint.x, iPoint.y, e.getClickCount(), e.isPopupTrigger(), e.getButton());
-			if(movedIcon.onMouseExited(eSmart)) {
-				String tip = movedIcon.getLocalTooltipText();
-				if(tip != null && ! tip.equals(tabbedPane.getToolTipTextAt(movedTab))) {
-					tabbedPane.setToolTipTextAt(movedTab, tip);
-				}
+                tabbedPane.repaint(prevRect.x, prevRect.y, prevRect.width, prevRect.height);
+            }
+            movedIcon = null;
+            movedTab = -1;
+        }
+    }
 
-				tabbedPane.repaint(prevRect.x, prevRect.y, prevRect.width, prevRect.height);
-			}
-			movedIcon = null;
-			movedTab = - 1;
-		}
+    /**
+     * MouseListener implementation, not used.
+     */
+    public void mouseEntered(MouseEvent e) {
+    }
 
-	}
+    /**
+     * MouseMotionListener implementation, not used.
+     */
+    public void mouseDragged(MouseEvent e) {
+    }
 
-	/** MouseListener implementation, not used.
-	 */
-	public void mouseEntered(MouseEvent e) {}
-
-	/** MouseMotionListener implementation, not used.
-	 */
-	public void mouseDragged(MouseEvent e) {}
-
-	/** MouseListener implementation, not used.
-	 */
-	public void mouseClicked(MouseEvent e) {}
-
+    /**
+     * MouseListener implementation, not used.
+     */
+    public void mouseClicked(MouseEvent e) {
+    }
 }

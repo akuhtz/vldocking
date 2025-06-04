@@ -1,7 +1,7 @@
 /*
     VLDocking Framework 3.0
     Copyright Lilian Chamontin, 2004-2013
-    
+
     www.vldocking.com
     vldocking@googlegroups.com
 ------------------------------------------------------------------------
@@ -25,7 +25,8 @@ import java.awt.Insets;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 
-/** A simple rounded border. 
+/**
+ * A simple rounded border.
  *
  * Can be used anywhere a rounded border is needed (no specific purpose).
  *
@@ -33,22 +34,22 @@ import javax.swing.border.Border;
  */
 public class RoundedBorder implements Border {
 
-	private Insets insets = new Insets(2, 2, 2, 2);
-	private Color shadow = UIManager.getColor("controlShadow");
+    private Insets insets = new Insets(2, 2, 2, 2);
+    private Color shadow = UIManager.getColor("controlShadow");
 
-	public RoundedBorder() {}
+    public RoundedBorder() {
+    }
 
-	public boolean isBorderOpaque() {
-		return false;
-	}
+    public boolean isBorderOpaque() {
+        return false;
+    }
 
-	public void paintBorder(Component component, Graphics graphics, int x, int y, int w, int h) {
-		graphics.setColor(shadow);
-		graphics.drawRoundRect(x, y, w - 1, h - 1, 9, 9);
+    public void paintBorder(Component component, Graphics graphics, int x, int y, int w, int h) {
+        graphics.setColor(shadow);
+        graphics.drawRoundRect(x, y, w - 1, h - 1, 9, 9);
+    }
 
-	}
-
-	public Insets getBorderInsets(Component component) {
-		return insets;
-	}
+    public Insets getBorderInsets(Component component) {
+        return insets;
+    }
 }

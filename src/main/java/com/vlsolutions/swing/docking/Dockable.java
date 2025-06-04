@@ -1,7 +1,7 @@
 /*
     VLDocking Framework 3.0
     Copyright Lilian Chamontin, 2004-2013
-    
+
     www.vldocking.com
     vldocking@googlegroups.com
 ------------------------------------------------------------------------
@@ -20,16 +20,17 @@ package com.vlsolutions.swing.docking;
 
 import java.awt.*;
 
-/** Interface describing a component (AWT/Swing) that can be managed by the
- * DockingDesktop.
+/**
+ * Interface describing a component (AWT/Swing) that can be managed by the DockingDesktop.
  *
- *<p>
- * Objects implementing this interface are usually wrappers around user components,
- * or user components themselves.
+ * <p>
+ * Objects implementing this interface are usually wrappers around user components, or user components
+ * themselves.
  * <ul>
- * <li> a wrapper example : the {@link DockablePanel} is a Dockable, and is used to display a
- * single user Component.
- * <li> a direct implementation example :
+ * <li>a wrapper example : the {@link DockablePanel} is a Dockable, and is used to display a single user
+ * Component.
+ * <li>a direct implementation example :
+ * 
  * <pre>
  * class MyComponent extends  JPanel implements Dockable {
  *     // unique key for the docking desktop
@@ -58,15 +59,15 @@ import java.awt.*;
  *
  * @author Lilian Chamontin, vlsolutions.
  * @version 1.0
- * */
+ */
 public interface Dockable {
 
-	/** returns the unique key identifying the docked element */
-	public DockKey getDockKey();
+    /** returns the unique key identifying the docked element */
+    DockKey getDockKey();
 
-	/** returns the component wrapped.
-	 *
-	 *  */
-	public Component getComponent();
-
+    /**
+     * returns the component wrapped.
+     *
+     */
+    Component getComponent();
 }

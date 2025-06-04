@@ -1,7 +1,7 @@
 /*
     VLDocking Framework 3.0
     Copyright Lilian Chamontin, 2004-2013
-    
+
     www.vldocking.com
     vldocking@googlegroups.com
 ------------------------------------------------------------------------
@@ -25,7 +25,8 @@ import javax.swing.UIManager;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.basic.BasicPanelUI;
 
-/** The UI of the "detached" (floating) dockview.
+/**
+ * The UI of the "detached" (floating) dockview.
  *
  * @see com.vlsolutions.swing.docking.DockView
  * @see com.vlsolutions.swing.docking.DetachedDockView
@@ -34,32 +35,36 @@ import javax.swing.plaf.basic.BasicPanelUI;
  */
 public class DetachedDockViewUI extends BasicPanelUI {
 
-	/* Note that this is not a subclass of DockViewUI, (to avoid border management problems due to ancestor listener) */
+    /*
+     * Note that this is not a subclass of DockViewUI, (to avoid border management problems due to ancestor
+     * listener)
+     */
 
-	private static DetachedDockViewUI instance = new DetachedDockViewUI();
-	@SuppressWarnings("unused")
-	private Color highlight = UIManager.getColor("VLDocking.highlight");
+    private static DetachedDockViewUI instance = new DetachedDockViewUI();
 
-	public DetachedDockViewUI() {}
+    @SuppressWarnings("unused")
+    private Color highlight = UIManager.getColor("VLDocking.highlight");
 
-	/**  Creates a UI for the given component (shared instance) */
-	public static ComponentUI createUI(JComponent c) {
-		return instance;
-	}
+    public DetachedDockViewUI() {
+    }
 
-	/** Installs the component's UI */
-	public void installUI(JComponent c) {
-		super.installUI(c);
-		c.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
-		/*    //BorderFactory.createCompoundBorder(
-		    //BorderFactory.createEmptyBorder(1,0,0,0), 
-		    BorderFactory.createMatteBorder(0, 1,1,1, Color.GRAY));
-		 */
-	}
+    /** Creates a UI for the given component (shared instance) */
+    public static ComponentUI createUI(JComponent c) {
+        return instance;
+    }
 
-	/** Uninstalls the component's UI */
-	public void uninstallUI(JComponent c) {
-		super.uninstallUI(c);
-	}
+    /** Installs the component's UI */
+    public void installUI(JComponent c) {
+        super.installUI(c);
+        c.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        /*
+         * //BorderFactory.createCompoundBorder( //BorderFactory.createEmptyBorder(1,0,0,0),
+         * BorderFactory.createMatteBorder(0, 1,1,1, Color.GRAY));
+         */
+    }
 
+    /** Uninstalls the component's UI */
+    public void uninstallUI(JComponent c) {
+        super.uninstallUI(c);
+    }
 }

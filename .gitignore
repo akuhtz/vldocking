@@ -1,7 +1,9 @@
-/target
-/bin
-/.settings
-/.classpath
-/.project
-/.gradle
-/build
+.settings
+.classpath
+.project
+.gradle
+build/
+venv/
+site/
+out/
+target

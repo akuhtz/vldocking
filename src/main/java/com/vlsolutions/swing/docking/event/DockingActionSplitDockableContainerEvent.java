@@ -1,7 +1,7 @@
 /*
     VLDocking Framework 3.0
     Copyright Lilian Chamontin, 2004-2013
-    
+
     www.vldocking.com
     vldocking@googlegroups.com
 ------------------------------------------------------------------------
@@ -21,50 +21,51 @@ package com.vlsolutions.swing.docking.event;
 import com.vlsolutions.swing.docking.DockableState;
 import com.vlsolutions.swing.docking.DockingConstants;
 import com.vlsolutions.swing.docking.DockingDesktop;
-
 import java.awt.Component;
 import java.awt.Container;
 
-/** A split event : split a base component in two, and puts a dockable container
- * in the other split position.
+/**
+ * A split event : split a base component in two, and puts a dockable container in the other split position.
  *
  * @author Lilian Chamontin, VLSolutions
- * @since 2.1 
+ * @since 2.1
  */
 public class DockingActionSplitDockableContainerEvent extends DockingActionEvent {
 
-	private Container dockableContainer;
+    private Container dockableContainer;
 
-	private DockingConstants.Split position;
+    private DockingConstants.Split position;
 
-	private float location;
+    private float location;
 
-	private Component base;
+    private Component base;
 
-	/** Constructs a new event 
-	 */
-	public DockingActionSplitDockableContainerEvent(DockingDesktop desk, DockableState.Location initialLocation, DockableState.Location nextLocation, Component base, Container dockableContainer, DockingConstants.Split position, float location) {
-		super(desk, initialLocation, nextLocation, ACTION_SPLIT_DOCKABLE);
-		this.base = base;
-		this.dockableContainer = dockableContainer;
-		this.position = position;
-		this.location = location;
-	}
+    /**
+     * Constructs a new event
+     */
+    public DockingActionSplitDockableContainerEvent(DockingDesktop desk,
+            DockableState.Location initialLocation, DockableState.Location nextLocation, Component base,
+            Container dockableContainer, DockingConstants.Split position, float location) {
+        super(desk, initialLocation, nextLocation, ACTION_SPLIT_DOCKABLE);
+        this.base = base;
+        this.dockableContainer = dockableContainer;
+        this.position = position;
+        this.location = location;
+    }
 
-	public Container getDockableContainer() {
-		return dockableContainer;
-	}
+    public Container getDockableContainer() {
+        return dockableContainer;
+    }
 
-	public DockingConstants.Split getSplitPosition() {
-		return position;
-	}
+    public DockingConstants.Split getSplitPosition() {
+        return position;
+    }
 
-	public float getLocation() {
-		return location;
-	}
+    public float getLocation() {
+        return location;
+    }
 
-	public Component getBase() {
-		return base;
-	}
-
+    public Component getBase() {
+        return base;
+    }
 }

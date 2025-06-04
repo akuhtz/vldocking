@@ -1,0 +1,4 @@
+mkdocs>=1.5,<1.6
+jinja2>=2.11.1
+mkdocs-material>=8.4.3
+mkdocs-glightbox

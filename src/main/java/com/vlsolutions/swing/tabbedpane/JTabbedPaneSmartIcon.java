@@ -1,7 +1,7 @@
 /*
     VLDocking Framework 3.0
     Copyright Lilian Chamontin, 2004-2013
-    
+
     www.vldocking.com
     vldocking@googlegroups.com
 ------------------------------------------------------------------------
@@ -30,390 +30,392 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.util.Map;
-
 import javax.swing.Icon;
 import javax.swing.JTabbedPane;
 import javax.swing.UIManager;
 
-/** An Icon allowing the use of closeable tabs by simulating the entire tabpane tab-painting.
+/**
+ * An Icon allowing the use of closeable tabs by simulating the entire tabpane tab-painting.
  *
- *<p>
- * As JTabbedPanes cannot use any JComponents as tab selectors (the access if protected and we just have
- * a label, an icon and a tooltip), we have to rely on tricks to bypass them.
+ * <p>
+ * As JTabbedPanes cannot use any JComponents as tab selectors (the access if protected and we just have a
+ * label, an icon and a tooltip), we have to rely on tricks to bypass them.
  *
  *
  *
  * @author Lilian Chamontin, VLSolutions
  * @update 2005/11/01 Lilian Chamontin : fixed NPE when otherIcons == null (tabs without smart icons)
- * @update 2005/11/08 Lilian Chamontin : fixed bug related to event management when multiple other-icons are used
- * (big thanks to Emmanuel GAUVRIT).
+ * @update 2005/11/08 Lilian Chamontin : fixed bug related to event management when multiple other-icons are
+ *         used (big thanks to Emmanuel GAUVRIT).
  * @update 2005/11/21 Lilian Chamontin : enhanced width calculation of the icon size.
  */
-@SuppressWarnings({"rawtypes", "unchecked"})
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class JTabbedPaneSmartIcon implements Icon, Cloneable {
 
-	/* Implementation : This icon is larger than standard icons : it also paints the tab title and optional buttons.
-	 * Inner Event management (with JTabbedPaneSmartIconManager) allows simulation of action on the buttons.
-	 *
-	 */
+    /*
+     * Implementation : This icon is larger than standard icons : it also paints the tab title and optional
+     * buttons. Inner Event management (with JTabbedPaneSmartIconManager) allows simulation of action on the
+     * buttons.
+     *
+     */
 
-	/** The traditional tab selector icon */
-	private Icon icon;
+    /** The traditional tab selector icon */
+    private Icon icon;
 
-	/** calculated used width (icon + label + other icons) + gaps */
-	private int width;
+    /** calculated used width (icon + label + other icons) + gaps */
+    private int width;
 
-	/** x location where the other icons are drawn*/
-	private int otherIconsOffset;
+    /** x location where the other icons are drawn */
+    private int otherIconsOffset;
 
-	/** tab height */
-	private int height;
+    /** tab height */
+    private int height;
 
-	/** the traditional tab selector label */
-	private String label;
+    /** the traditional tab selector label */
+    private String label;
 
-	/** the traditional tab selector tooltip text*/
-	private String tooltipText;
+    /** the traditional tab selector tooltip text */
+    private String tooltipText;
 
-	/** local tooltip text : the one to use during mouse movements (depends on the mouse position,
-	 * and can be either the tab selector tooltip text or one of the smart buttons included into this icon).
-	 */
-	private String localTooltipText;
+    /**
+     * local tooltip text : the one to use during mouse movements (depends on the mouse position, and can be
+     * either the tab selector tooltip text or one of the smart buttons included into this icon).
+     */
+    private String localTooltipText;
 
-	// list of additional icons (presented as buttons)
-	private SmartIconJButton[] otherIcons;
+    // list of additional icons (presented as buttons)
+    private SmartIconJButton[] otherIcons;
 
-	/** currently pressed inner button */
-	private SmartIconJButton pressedButton;
+    /** currently pressed inner button */
+    private SmartIconJButton pressedButton;
 
-	/** currently rolled-over inner button */
-	private SmartIconJButton rolloverButton;
+    /** currently rolled-over inner button */
+    private SmartIconJButton rolloverButton;
 
-	/** gap between the icon and the text*/
-	private int textIconGap;
+    /** gap between the icon and the text */
+    private int textIconGap;
 
-	/** gap between the text and the following icons*/
-	private int otherIconsGap;
+    /** gap between the text and the following icons */
+    private int otherIconsGap;
 
     private Map defaultHints;
     private Map originalHints;
 
-	/* The container this icon is for (required to calculate proper widths and heights) */
-	private JTabbedPane container;
+    /* The container this icon is for (required to calculate proper widths and heights) */
+    private JTabbedPane container;
 
-	private int inBetweenOtherIconsGap;
+    private int inBetweenOtherIconsGap;
 
-	/** Constructs a new smart icon with a given set of additional buttons */
-	public JTabbedPaneSmartIcon(Icon icon, String label, SmartIconJButton[] otherIcons) {
-		this.icon = icon;
-		this.label = label;
-		this.otherIcons = otherIcons;
+    /** Constructs a new smart icon with a given set of additional buttons */
+    public JTabbedPaneSmartIcon(Icon icon, String label, SmartIconJButton[] otherIcons) {
+        this.icon = icon;
+        this.label = label;
+        this.otherIcons = otherIcons;
 
-		this.textIconGap = UIManager.getInt("TabbedPane.textIconGap");
-		this.otherIconsGap = UIManager.getInt("TabbedPane.otherIconsGap");
-		this.inBetweenOtherIconsGap = UIManager.getInt("TabbedPane.inBetweenOtherIconsGap");
-		invalidateSize();
-		originalHints = new RenderingHints(null);
-		try {
-		    defaultHints = (Map) Toolkit.getDefaultToolkit().getDesktopProperty("awt.font.desktophints");
-		} catch(AWTError ignore) {
-		} finally {
-		    if (defaultHints == null) {
-		        defaultHints = new RenderingHints(null);
-		    }
-		}
+        this.textIconGap = UIManager.getInt("TabbedPane.textIconGap");
+        this.otherIconsGap = UIManager.getInt("TabbedPane.otherIconsGap");
+        this.inBetweenOtherIconsGap = UIManager.getInt("TabbedPane.inBetweenOtherIconsGap");
+        invalidateSize();
+        originalHints = new RenderingHints(null);
+        Map hints = null;
+        try {
+            hints = (Map) Toolkit.getDefaultToolkit().getDesktopProperty("awt.font.desktophints");
+        } catch (AWTError ignored) {
+        }
+        if (hints == null) {
+            hints = new RenderingHints(null);
+        }
+        defaultHints = hints;
+    }
 
-	}
+    public SmartIconJButton getSmartButton(int index) {
+        return otherIcons[index];
+    }
 
-	public SmartIconJButton getSmartButton(int index) {
-		return otherIcons[index];
-	}
+    public void setSmartButton(int index, SmartIconJButton btn) {
+        otherIcons[index] = btn;
+        invalidateSize();
+    }
 
-	public void setSmartButton(int index, SmartIconJButton btn) {
-		otherIcons[index] = btn;
-		invalidateSize();
-	}
+    /** Creates a shalow copy of this icon */
+    public JTabbedPaneSmartIcon copy() {
+        return (JTabbedPaneSmartIcon) clone();
+    }
 
-	/** Creates a shalow copy of this icon */
-	public JTabbedPaneSmartIcon copy() {
-		return (JTabbedPaneSmartIcon) clone();
-	}
+    /** {@inheritDoc} */
+    public Object clone() {
+        try {
+            return super.clone();
+        } catch (CloneNotSupportedException ignored) {
+            // ignored.printStackTrace();
+            return null;
+        }
+    }
 
-	/** {@inheritDoc} */
-	public Object clone() {
-		try {
-			return super.clone();
-		} catch(CloneNotSupportedException ignore) {
-			ignore.printStackTrace();
-			return null;
-		}
-	}
+    /** Update the tooltip of this icon */
+    public void setTooltipText(String tooltip) {
+        this.tooltipText = tooltip;
+    }
 
-	/** Update the tooltip of this icon */
-	public void setTooltipText(String tooltip) {
-		this.tooltipText = tooltip;
-	}
+    /** Return the tooltip of this icon */
+    public String getTooltipText() {
+        return this.tooltipText;
+    }
 
-	/** Return the tooltip of this icon */
-	public String getTooltipText() {
-		return this.tooltipText;
-	}
+    /** Return the local tooltip of this icon (the one associated with inner mouse movements) */
+    public String getLocalTooltipText() {
+        return this.localTooltipText;
+    }
 
-	/** Return the local tooltip of this icon (the one associated with inner mouse movements)*/
-	public String getLocalTooltipText() {
-		return this.localTooltipText;
-	}
+    /** Update the label to be displayed on the tab */
+    public void setLabel(String label) {
+        this.label = label;
+        invalidateSize();
+    }
 
-	/** Update the label to be displayed on the tab */
-	public void setLabel(String label) {
-		this.label = label;
-		invalidateSize();
-	}
+    /** Return the tab label */
+    public String getLabel() {
+        return this.label;
+    }
 
-	/** Return the tab label */
-	public String getLabel() {
-		return this.label;
-	}
+    /** Update the main icon (left) to be displayed on the tab */
+    public void setIcon(Icon icon) {
+        this.icon = icon;
+        invalidateSize();
+    }
 
-	/** Update the main icon (left) to be displayed on the tab */
-	public void setIcon(Icon icon) {
-		this.icon = icon;
-		invalidateSize();
-	}
+    /** Return the tab icon */
+    public Icon getIcon() {
+        return this.icon;
+    }
 
-	/** Return the tab icon */
-	public Icon getIcon() {
-		return this.icon;
-	}
+    private void invalidateSize() {
+        this.width = this.height = -1;
+    }
 
-	private void invalidateSize() {
-		this.width = this.height = - 1;
-	}
+    /**
+     * Specify which container will use this icon.
+     * <p>
+     * If the icon is shared between containers, please provide at least one as this allows the icon to
+     * properly estimate its dimension.
+     */
+    public void setIconForTabbedPane(JTabbedPane container) {
+        this.container = container;
+    }
 
-	/** Specify which container will use this icon.
-	 * <p> If the icon is shared between containers, please provide at least one as
-	 * this allows the icon to properly estimate its dimension.
-	 */
-	public void setIconForTabbedPane(JTabbedPane container) {
-		this.container = container;
-	}
+    /** paints the icon (and the associated label and sub-icons) */
+    public void paintIcon(Component c, Graphics g, int x, int y) {
+        Graphics2D g2 = (Graphics2D) g;
+        getRenderingHints(g2);
+        g2.addRenderingHints(defaultHints);
 
-	/** paints the icon (and the associated label and sub-icons) */
-	public void paintIcon(Component c, Graphics g, int x, int y) {
-		Graphics2D g2 = (Graphics2D) g;
-		getRenderingHints(g2, defaultHints, originalHints);
-		if (defaultHints != null) {
-			g2.addRenderingHints(defaultHints);
-		}
-		
-		if(icon != null) {
-			icon.paintIcon(c, g, x, y);
-		}
+        if (icon != null) {
+            icon.paintIcon(c, g, x, y);
+        }
 
-		Font f = UIManager.getFont("JTabbedPaneSmartIcon.font"); // 2006/01/23
-		if(f != null) {
-			g.setFont(f);
-		}
+        Font f = UIManager.getFont("JTabbedPaneSmartIcon.font"); // 2006/01/23
+        if (f != null) {
+            g.setFont(f);
+        }
 
-		// reevaluate the width with correct graphics object, in case something has changed
-		FontMetrics fm = g.getFontMetrics();
-		int iconsOffset = otherIconsOffset;
+        // reevaluate the width with correct graphics object, in case something has changed
+        FontMetrics fm = g.getFontMetrics();
+        int iconsOffset = otherIconsOffset;
 
-		if(icon != null) {
-			g.drawString(label, x + icon.getIconWidth() + textIconGap, y + height - fm.getDescent());
-		} else {
-			g.drawString(label, x, y + height - fm.getDescent());
-		}
-		if(otherIcons != null) {    //2005/11/01
-			for(int i = 0; i < otherIcons.length; i++) {
-				otherIcons[i].paintIcon(c, g, x + iconsOffset, y + height / 2 - otherIcons[i].getIconHeight() / 2);
-				iconsOffset += otherIcons[i].getIconWidth();
-				if(i < otherIcons.length - 1) {
-					iconsOffset += inBetweenOtherIconsGap;
-				}
-			}
-		}
+        if (icon != null) {
+            g.drawString(label, x + icon.getIconWidth() + textIconGap, y + height - fm.getDescent());
+        } else {
+            g.drawString(label, x, y + height - fm.getDescent());
+        }
+        if (otherIcons != null) { // 2005/11/01
+            for (int i = 0; i < otherIcons.length; i++) {
+                otherIcons[i].paintIcon(c, g, x + iconsOffset,
+                        y + height / 2 - otherIcons[i].getIconHeight() / 2);
+                iconsOffset += otherIcons[i].getIconWidth();
+                if (i < otherIcons.length - 1) {
+                    iconsOffset += inBetweenOtherIconsGap;
+                }
+            }
+        }
 
-		g2.addRenderingHints(originalHints);
+        g2.addRenderingHints(originalHints);
+    }
 
-	}
-	
-	/**
-	  * Get rendering hints from a Graphics instance.
-	  * "hintsToSave" is a Map of RenderingHint key-values.
-	  * For each hint key present in that map, the value of that
-	  * hint is obtained from the Graphics and stored as the value
-	  * for the key in savedHints.
-	  * 
-	  * From: http://docs.oracle.com/javase/7/docs/api/java/awt/doc-files/DesktopProperties.html
-	  */
-	private Map getRenderingHints(Graphics2D g2d, Map hintsToSave, Map savedHints) {
-	     if (savedHints == null) {
-	         savedHints = new RenderingHints(null);
-	     } else {
-	         savedHints.clear();
-	     }
-	     if (hintsToSave == null || hintsToSave.size() == 0) {
-	         return savedHints;
-	     }
-	     /* RenderingHints.keySet() returns Set */
-	     for (Object o : hintsToSave.keySet()) {
-	         RenderingHints.Key key = (RenderingHints.Key)o;
-	         Object value = g2d.getRenderingHint(key);
-	         savedHints.put(key, value);
-	     }
-	     return savedHints;
-	}
+    /**
+     * Get rendering hints from a Graphics instance. "hintsToSave" is a Map of RenderingHint key-values. For
+     * each hint key present in that map, the value of that hint is obtained from the Graphics and stored as
+     * the value for the key in savedHints.
+     *
+     * From: http://docs.oracle.com/javase/7/docs/api/java/awt/doc-files/DesktopProperties.html
+     */
+    private void getRenderingHints(Graphics2D g2d) {
+        originalHints.clear();
+        if (defaultHints.isEmpty()) {
+            return;
+        }
+        /* RenderingHints.keySet() returns Set */
+        for (Object o : defaultHints.keySet()) {
+            RenderingHints.Key key = (RenderingHints.Key) o;
+            Object value = g2d.getRenderingHint(key);
+            originalHints.put(key, value);
+        }
+    }
 
-	private SmartIconJButton findButtonAt(Point p) {
-		int start = otherIconsOffset;
-		if(otherIcons != null) {    //2005/11/01
-			for(int i = 0; i < otherIcons.length; i++) {
-				SmartIconJButton btn = otherIcons[i];
-				if(p.x >= start && p.x < start + btn.getIconWidth()) {
-					if(p.y >= height / 2 - btn.getIconHeight() / 2 && p.y < height / 2 + btn.getIconHeight() / 2) {
-						return btn;
-					} else {
-						return null;
-					}
-				}
-				start += btn.getIconWidth(); // bug corrected thanks to Emmanuel GAUVRIT 2005/11/08
-				if(i < otherIcons.length - 1) {
-					start += inBetweenOtherIconsGap;
-				}
-			}
-		}
-		return null;
-	}
+    private SmartIconJButton findButtonAt(Point p) {
+        int start = otherIconsOffset;
+        if (otherIcons != null) { // 2005/11/01
+            for (int i = 0; i < otherIcons.length; i++) {
+                SmartIconJButton btn = otherIcons[i];
+                if (p.x >= start && p.x < start + btn.getIconWidth()) {
+                    if (p.y >= height / 2 - btn.getIconHeight() / 2
+                            && p.y < height / 2 + btn.getIconHeight() / 2) {
+                        return btn;
+                    } else {
+                        return null;
+                    }
+                }
+                start += btn.getIconWidth(); // bug corrected thanks to Emmanuel GAUVRIT 2005/11/08
+                if (i < otherIcons.length - 1) {
+                    start += inBetweenOtherIconsGap;
+                }
+            }
+        }
+        return null;
+    }
 
-	/** Returns the width of this icon */
-	public int getIconWidth() {
-		if(width == - 1) {
-			if(container == null) {
-				throw new NullPointerException("container for this smart icon not specified with setIconForTabbedPane()");
-			}
-			// reevaluate the width with correct graphics object, in case something has changed
-			//Font f = UIManager.getFont("DockTabbedPane.font"); // 2006/01/23
-			Font f = UIManager.getFont("JTabbedPaneSmartIcon.font"); // 2006/01/23
-			FontMetrics fm = container.getFontMetrics(f);
-			this.width = 0;
-			if(icon != null) {
-				width = icon.getIconWidth();
-			}
-			width += textIconGap + fm.stringWidth(label) + otherIconsGap;
+    /** Returns the width of this icon */
+    public int getIconWidth() {
+        if (width == -1) {
+            if (container == null) {
+                throw new NullPointerException(
+                        "container for this smart icon not specified with setIconForTabbedPane()");
+            }
+            // reevaluate the width with correct graphics object, in case something has changed
+            // Font f = UIManager.getFont("DockTabbedPane.font"); // 2006/01/23
+            Font f = UIManager.getFont("JTabbedPaneSmartIcon.font"); // 2006/01/23
+            FontMetrics fm = container.getFontMetrics(f);
+            this.width = 0;
+            if (icon != null) {
+                width = icon.getIconWidth();
+            }
+            width += textIconGap + fm.stringWidth(label) + otherIconsGap;
 
-			this.otherIconsOffset = width;
-			@SuppressWarnings("unused")
-			int iconsOffset = otherIconsOffset;
-			if(otherIcons != null) {
-				for(int i = 0; i < otherIcons.length; i++) {
-					width += otherIcons[i].getIconWidth(); // additional width for icons
-					if(i < otherIcons.length - 1) {
-						width += inBetweenOtherIconsGap;
-					}
-				}
-			}
-		}
-		return width;
+            this.otherIconsOffset = width;
+            @SuppressWarnings("unused")
+            int iconsOffset = otherIconsOffset;
+            if (otherIcons != null) {
+                for (int i = 0; i < otherIcons.length; i++) {
+                    width += otherIcons[i].getIconWidth(); // additional width for icons
+                    if (i < otherIcons.length - 1) {
+                        width += inBetweenOtherIconsGap;
+                    }
+                }
+            }
+        }
+        return width;
+    }
 
-	}
+    /** Returns the height of this icon */
+    public int getIconHeight() {
+        if (height == -1) {
+            if (icon != null) {
+                height = icon.getIconHeight();
+            } else {
+                height = 16; // standard height (as if there was an icon) : should be calculated instead of
+                             // fixed
+            }
+        }
+        return height;
+    }
 
-	/** Returns the height of this icon */
-	public int getIconHeight() {
-		if(height == - 1) {
-			if(icon != null) {
-				height = icon.getIconHeight();
-			} else {
-				height = 16; // standard height (as if there was an icon) : should be calculated instead of fixed
-			}
-		}
-		return height;
-	}
+    /**
+     * Process the mouse pressed event.
+     * <p>
+     * Mouse coordinates are given relative to this icon
+     */
+    public boolean onMousePressed(MouseEvent e) {
+        // find the icon under the point
+        SmartIconJButton btn = findButtonAt(e.getPoint());
+        if (btn != null && btn.isEnabled()) {
+            btn.setPressed(true);
+            pressedButton = btn;
+            return true;
+        }
+        return false;
+    }
 
-	/** Process the mouse pressed event.
-	 *<p>
-	 * Mouse coordinates are given relative to this icon
-	 */
-	public boolean onMousePressed(MouseEvent e) {
-		// find the icon under the point
-		SmartIconJButton btn = findButtonAt(e.getPoint());
-		if(btn != null && btn.isEnabled()) {
-			btn.setPressed(true);
-			pressedButton = btn;
-			return true;
-		}
-		return false;
-	}
+    /**
+     * Process the mouse released event.
+     * <p>
+     * Mouse coordinates are given relative to this icon
+     */
+    public boolean onMouseReleased(final MouseEvent e) {
+        if (pressedButton != null && pressedButton.isEnabled()) {
+            pressedButton.setPressed(false);
+            final SmartIconJButton btn = findButtonAt(e.getPoint());
+            if (btn == pressedButton) {
+                btn.fireAction(new ActionEvent(e.getSource(), ActionEvent.ACTION_PERFORMED, ""));
+                return true;
+            }
+        }
+        return false;
+    }
 
-	/** Process the mouse released event.
-	 *<p>
-	 * Mouse coordinates are given relative to this icon
-	 */
-	public boolean onMouseReleased(final MouseEvent e) {
-		if(pressedButton != null && pressedButton.isEnabled()) {
-			pressedButton.setPressed(false);
-			final SmartIconJButton btn = findButtonAt(e.getPoint());
-			if(btn == pressedButton) {
-				btn.fireAction(new ActionEvent(e.getSource(), ActionEvent.ACTION_PERFORMED, ""));
-				return true;
-			}
-		}
-		return false;
-	}
+    /**
+     * Process the mouse exited event.
+     * <p>
+     * Mouse coordinates are given relative to this icon
+     */
+    public boolean onMouseExited(MouseEvent e) {
+        // reset all rollover states
+        if (rolloverButton != null) {
+            rolloverButton.setRollover(false);
+            rolloverButton = null;
+            localTooltipText = tooltipText;
+            return true;
+        }
+        rolloverButton = null;
+        return false;
+    }
 
-	/** Process the mouse exited event.
-	 *<p>
-	 * Mouse coordinates are given relative to this icon
-	 */
-	public boolean onMouseExited(MouseEvent e) {
-		// reset all rollover states
-		if(rolloverButton != null) {
-			rolloverButton.setRollover(false);
-			rolloverButton = null;
-			localTooltipText = tooltipText;
-			return true;
-		}
-		rolloverButton = null;
-		return false;
-	}
+    /**
+     * Process the mouse moved event.
+     * <p>
+     * Mouse coordinates are given relative to this icon
+     */
+    public boolean onMouseMoved(MouseEvent e) {
+        // check for a rollover effect
+        SmartIconJButton btn = findButtonAt(e.getPoint());
+        boolean shouldRepaint = false;
+        if (btn != null) {
+            String tip = btn.getTooltipText();
+            if (tip != null) {
+                if (!tip.equals(localTooltipText)) {
+                    this.localTooltipText = tip;
+                    shouldRepaint = true;
+                }
+            } else if (localTooltipText != tooltipText) {
+                this.localTooltipText = tooltipText;
+                shouldRepaint = true;
+            }
+            if (btn == rolloverButton) {
+                // still on the same button
+            } else {
+                // another button
+                if (rolloverButton != null) {
+                    rolloverButton.setRollover(false);
+                }
+                rolloverButton = btn;
+                rolloverButton.setRollover(true);
+                shouldRepaint = true;
+            }
+        } else if (rolloverButton != null) {
+            rolloverButton.setRollover(false);
+            rolloverButton = null;
+            localTooltipText = tooltipText;
+            shouldRepaint = true;
+        }
 
-	/** Process the mouse moved event.
-	 *<p>
-	 * Mouse coordinates are given relative to this icon
-	 */
-	public boolean onMouseMoved(MouseEvent e) {
-		// check for a rollover effect
-		SmartIconJButton btn = findButtonAt(e.getPoint());
-		boolean shouldRepaint = false;
-		if(btn != null) {
-			String tip = btn.getTooltipText();
-			if(tip != null) {
-				if(! tip.equals(localTooltipText)) {
-					this.localTooltipText = tip;
-					shouldRepaint = true;
-				}
-			} else if(localTooltipText != tooltipText) {
-				this.localTooltipText = tooltipText;
-				shouldRepaint = true;
-			}
-			if(btn == rolloverButton) {
-				// still on the same button
-			} else {
-				// another button
-				if(rolloverButton != null) {
-					rolloverButton.setRollover(false);
-				}
-				rolloverButton = btn;
-				rolloverButton.setRollover(true);
-				shouldRepaint = true;
-			}
-		} else if(rolloverButton != null) {
-			rolloverButton.setRollover(false);
-			rolloverButton = null;
-			localTooltipText = tooltipText;
-			shouldRepaint = true;
-		}
-
-		return shouldRepaint;
-	}
+        return shouldRepaint;
+    }
 }

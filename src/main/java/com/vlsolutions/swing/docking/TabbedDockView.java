@@ -1,7 +1,7 @@
 /*
     VLDocking Framework 3.0
     Copyright Lilian Chamontin, 2004-2013
-    
+
     www.vldocking.com
     vldocking@googlegroups.com
 ------------------------------------------------------------------------
@@ -21,62 +21,60 @@ package com.vlsolutions.swing.docking;
 import com.vlsolutions.swing.docking.event.DockDragEvent;
 import com.vlsolutions.swing.docking.event.DockDropEvent;
 import com.vlsolutions.swing.docking.event.DockEvent;
-
 import java.awt.Component;
-
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
-/** A DockView that can be nested into a TabbedDockableContainer
+/**
+ * A DockView that can be nested into a TabbedDockableContainer
  *
  * @author Lilian Chamontin, VLSolutions
  */
 public class TabbedDockView extends DockView {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public TabbedDockView(Dockable dockable) {
-		super(dockable, false);
-	}
+    public TabbedDockView(Dockable dockable) {
+        super(dockable, false);
+    }
 
-	protected void scanDrop(DockEvent event, boolean drop) {
-		DockableState.Location location = dockable.getDockKey().getLocation();
-		if(location == DockableState.Location.DOCKED) {
-			super.scanDrop(event, drop);
-		} else if(location == DockableState.Location.FLOATING) {
-			// don't allow drop for floating tabs : only when child of a compound dockable
-			if(DockingUtilities.isChildOfCompoundDockable(dockable)) {
-				super.scanDrop(event, drop);
-			} else {
-				if(drop) {
-					((DockDropEvent) event).rejectDrop();
-				} else {
-					((DockDragEvent) event).delegateDrag();
-				}
-			}
-		}
-	}
+    protected void scanDrop(DockEvent event, boolean drop) {
+        DockableState.Location location = dockable.getDockKey().getLocation();
+        if (location == DockableState.Location.DOCKED) {
+            super.scanDrop(event, drop);
+        } else if (location == DockableState.Location.FLOATING) {
+            // don't allow drop for floating tabs : only when child of a compound dockable
+            if (DockingUtilities.isChildOfCompoundDockable(dockable)) {
+                super.scanDrop(event, drop);
+            } else {
+                if (drop) {
+                    ((DockDropEvent) event).rejectDrop();
+                } else {
+                    ((DockDragEvent) event).delegateDrag();
+                }
+            }
+        }
+    }
 
-	public void setVisible(boolean visible) {
-		super.setVisible(visible);
-		if(visible) {
-			if(UIManager.getBoolean("TabbedContainer.requestFocusOnTabSelection")) {
-				// this is a workaround to get focus on a tab when it's selected
-				// obviously, this relies in the fact that the parent of this dockView is
-				// the tab container.
-				SwingUtilities.invokeLater(new Runnable() {
+    public void setVisible(boolean visible) {
+        super.setVisible(visible);
+        if (visible) {
+            if (UIManager.getBoolean("TabbedContainer.requestFocusOnTabSelection")) {
+                // this is a workaround to get focus on a tab when it's selected
+                // obviously, this relies in the fact that the parent of this dockView is
+                // the tab container.
+                SwingUtilities.invokeLater(new Runnable() {
 
-					public void run() {
-						if(getDockable() != null) {
-							Component comp = getDockable().getComponent();
-							if(comp != null) {
-								comp.requestFocus();
-							}
-						}
-					}
-				});
-			}
-		}
-	}
-
+                    public void run() {
+                        if (getDockable() != null) {
+                            Component comp = getDockable().getComponent();
+                            if (comp != null) {
+                                comp.requestFocus();
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    }
 }

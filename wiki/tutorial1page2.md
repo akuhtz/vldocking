@@ -2,7 +2,7 @@
 
 ## And now... Docking !
 
-Here is the receipe to transform our application into a docking-enabled application :
+Here is the recipe to transform our application into a docking-enabled application :
 
 * Have the GUI blocks (our four components) implement the Dockable interface
 * Install a DockingDesktop on our Frame
@@ -12,7 +12,7 @@ So let's start...
 
 ## Implement the Dockable interface
 
-The Dockable interface is simple : you just have two methods :
+The Dockable interface is simple: you just have two methods :
 
 ```java
     public DockKey getDockKey();
@@ -174,51 +174,42 @@ this position or  construct a new position (look at the RelativeDockingPosition 
 
 And here are some images showing the effects of those methods :
 
-<table>
-  <tr>
-    <th>Split</th>
-    <td rowspan="2">
-<pre lang="java">
+![Split](frame3.jpg){ align=right width=200 }
+```java title="Split"
         desk.addDockable(editorPanel);
         desk.split(editorPanel, treePanel, DockingConstants.SPLIT_LEFT);
         desk.split(editorPanel, buttonGrid, DockingConstants.SPLIT_RIGHT);
         desk.split(buttonGrid, tablePanel, DockingConstants.SPLIT_BOTTOM);
-</pre>
-    </td>
-  </tr>
-  <tr><td><img src="frame3.jpg"/></td></tr>
-  <tr>
-    <th>Split and Tab</th>
-    <td rowspan="2">
-<pre lang="java">
+```
+
+
+![](frame4.jpg){ align=right width=200 }
+```java title="Split and Tab"
+
         desk.addDockable(editorPanel);
         desk.split(editorPanel, treePanel, DockingConstants.SPLIT_LEFT);
         desk.split(editorPanel, buttonGrid, DockingConstants.SPLIT_RIGHT);
         desk.createTab(treePanel, tablePanel, 1);
-</pre>
-    </td>
-	</tr>
-  <tr><td><img src="frame4.jpg"/></td></tr>
-  <tr>
-    <th>Split and Auto-Hide</th>
-    <td rowspan="2">
-<pre lang="java">
+```
+
+
+![](frame5.jpg){ align=right width=200 }
+```java title="Split and Auto-Hide"
+
         desk.addDockable(editorPanel);
         // the tree panel is auto-hidden and will be restored (docked)
         // on the left of the DockingDesktop
         desk.addHiddenDockable(treePanel, RelativeDockablePosition.LEFT);
         desk.split(editorPanel, buttonGrid, DockingConstants.SPLIT_RIGHT);
         desk.split(editorPanel, tablePanel, DockingConstants.SPLIT_LEFT);
-</pre>
-    </td>
-  </tr>
-  <tr><td><img src="frame5.jpg"/></td></tr>
-</table>
+```
+
+
 
 ## The Dockable Containers
 
 You can see from the screenshots, or from your personal tests, that your dockables have
-been decorated : They all have a title bar with buttons, and a nice shadow border
+been decorated: They all have a title bar with buttons, and a nice shadow border
 around them (Docking 1.1 style) or a simpler flat border (Docking 2.0 style). 
 
 
@@ -241,4 +232,4 @@ many Dockables on tabs, with always one Dockable selected and visible, on top of
 
 ----
 
-Next : [Lesson 2 - Customizing the desktop layout, display and docking behaviour](tutorial2.md)
+Next: [Lesson 2 - Customizing the desktop layout, display and docking behaviour](tutorial2.md)
