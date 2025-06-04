@@ -252,7 +252,7 @@ public class DockingDesktop extends JLayeredPane {
                     DockableState.Location location = d.getDockKey().getLocation();
 
                     if (location == DockableState.Location.DOCKED || location == DockableState.Location.FLOATING
-                            || location == DockableState.Location.HIDDEN) {
+                        || location == DockableState.Location.HIDDEN) {
                         close(d);
                     }
                 }
@@ -481,7 +481,7 @@ public class DockingDesktop extends JLayeredPane {
                                         .getParent()
                                         .setBounds(i.left, i.top, w - i.left - i.right, h - i.top - i.bottom);
                                 }
-                                }
+                            }
                             else {
                                 maximizedComponent
                                     .getParent().setBounds(i.left, i.top, w - i.left - i.right, h - i.top - i.bottom);
@@ -1001,8 +1001,8 @@ public class DockingDesktop extends JLayeredPane {
             split = new SplitContainer(JSplitPane.VERTICAL_SPLIT);
         }
         else /*
-                * if (position == DockingConstants.SPLIT_LEFT || position == DockingConstants.SPLIT_RIGHT)
-                */ {
+              * if (position == DockingConstants.SPLIT_LEFT || position == DockingConstants.SPLIT_RIGHT)
+              */ {
             split = new SplitContainer(JSplitPane.HORIZONTAL_SPLIT);
         }
         return split;
@@ -1773,25 +1773,25 @@ public class DockingDesktop extends JLayeredPane {
             DockableState.Location location = dockable.getDockKey().getLocation();
             RelativeDockablePosition position = null;
             switch (location) {
-            case DOCKED:
-                position = new RelativeDockablePosition(getRelativeAncestorContainer(dockable), dockable);
-                break;
-            case HIDDEN:
-                position = currentState.getPosition(); // get the position that
-                // was stored before
-                break;
-            case FLOATING:
-                // from floating..to floating. It's still possible, if the
-                // component was previously tabbed (now it will have its
-                // own window
-                if (DockingUtilities.findTabbedDockableContainer(dockable) == null) {
-                    throw new IllegalArgumentException("floating not tabbed");
-                }
-                break;
-            case CLOSED:
-                break;
-            default:
-                throw new IllegalArgumentException("not docked " + location);
+                case DOCKED:
+                    position = new RelativeDockablePosition(getRelativeAncestorContainer(dockable), dockable);
+                    break;
+                case HIDDEN:
+                    position = currentState.getPosition(); // get the position that
+                    // was stored before
+                    break;
+                case FLOATING:
+                    // from floating..to floating. It's still possible, if the
+                    // component was previously tabbed (now it will have its
+                    // own window
+                    if (DockingUtilities.findTabbedDockableContainer(dockable) == null) {
+                        throw new IllegalArgumentException("floating not tabbed");
+                    }
+                    break;
+                case CLOSED:
+                    break;
+                default:
+                    throw new IllegalArgumentException("not docked " + location);
             }
 
             DockableState newState = new DockableState(this, dockable, DockableState.Location.FLOATING, position);
@@ -3183,95 +3183,95 @@ public class DockingDesktop extends JLayeredPane {
             Element elt = (Element) node;
             String name = elt.getNodeName();
             switch (name) {
-            case "DockingPanel": {
+                case "DockingPanel": {
 
-                // only one child at most
-                NodeList children = elt.getChildNodes();
-                for (int i = 0, len = children.getLength(); i < len; i++) {
-                    xmlBuildDockingPanelNode(elt.getChildNodes().item(i));
-                }
-                try {
-                    final int x = Integer.parseInt(elt.getAttribute("x"));
-                    final int y = Integer.parseInt(elt.getAttribute("y"));
-
-                    final int width = Integer.parseInt(elt.getAttribute("width"));
-                    final int height = Integer.parseInt(elt.getAttribute("height"));
-
-                    Window w = SwingUtilities.getWindowAncestor(DockingDesktop.this);
-                    if (w != null && w.isVisible()) {
-                        w.setBounds(x, y, width, height);
+                    // only one child at most
+                    NodeList children = elt.getChildNodes();
+                    for (int i = 0, len = children.getLength(); i < len; i++) {
+                        xmlBuildDockingPanelNode(elt.getChildNodes().item(i));
                     }
-                    // will make window bounce :-(
-                    addAncestorListener(new AncestorListener() {
-                        @Override
-                        public void ancestorAdded(AncestorEvent event) {
-                            Window w = SwingUtilities.getWindowAncestor(DockingDesktop.this);
+                    try {
+                        final int x = Integer.parseInt(elt.getAttribute("x"));
+                        final int y = Integer.parseInt(elt.getAttribute("y"));
+
+                        final int width = Integer.parseInt(elt.getAttribute("width"));
+                        final int height = Integer.parseInt(elt.getAttribute("height"));
+
+                        Window w = SwingUtilities.getWindowAncestor(DockingDesktop.this);
+                        if (w != null && w.isVisible()) {
                             w.setBounds(x, y, width, height);
-                            removeAncestorListener(this);
                         }
+                        // will make window bounce :-(
+                        addAncestorListener(new AncestorListener() {
+                            @Override
+                            public void ancestorAdded(AncestorEvent event) {
+                                Window w = SwingUtilities.getWindowAncestor(DockingDesktop.this);
+                                w.setBounds(x, y, width, height);
+                                removeAncestorListener(this);
+                            }
 
-                        @Override
-                        public void ancestorRemoved(AncestorEvent event) {
-                        }
+                            @Override
+                            public void ancestorRemoved(AncestorEvent event) {
+                            }
 
-                        @Override
-                        public void ancestorMoved(AncestorEvent event) {
-                        }
-                    });
+                            @Override
+                            public void ancestorMoved(AncestorEvent event) {
+                            }
+                        });
                     }
                     catch (Exception e) {
-                    log.debug("", e);
+                        log.debug("", e);
+                    }
+                    break;
                 }
-                break;
-            }
-            case "Border": {
-                int zone = Integer.parseInt(elt.getAttribute("zone"));
-                AutoHideButtonPanel borderPanel = borderPanes[zone];
-                borderPanel.setVisible(true); // border may not be visible
+                case "Border": {
+                    int zone = Integer.parseInt(elt.getAttribute("zone"));
+                    AutoHideButtonPanel borderPanel = borderPanes[zone];
+                    borderPanel.setVisible(true); // border may not be visible
 
-                NodeList children = elt.getElementsByTagName("Dockable");
-                for (int i = 0, len = children.getLength(); i < len; i++) {
-                    xmlBuildAutoHideNode(borderPanel, (Element) children.item(i));
+                    NodeList children = elt.getElementsByTagName("Dockable");
+                    for (int i = 0, len = children.getLength(); i < len; i++) {
+                        xmlBuildAutoHideNode(borderPanel, (Element) children.item(i));
+                    }
+                    borderPanel.revalidate();
+                    break;
                 }
-                borderPanel.revalidate();
-                break;
-            }
-            case "Floating": {
-                int x = Integer.parseInt(elt.getAttribute("x"));
-                int y = Integer.parseInt(elt.getAttribute("y"));
-                int width = Integer.parseInt(elt.getAttribute("width"));
-                int height = Integer.parseInt(elt.getAttribute("height"));
+                case "Floating": {
+                    int x = Integer.parseInt(elt.getAttribute("x"));
+                    int y = Integer.parseInt(elt.getAttribute("y"));
+                    int width = Integer.parseInt(elt.getAttribute("width"));
+                    int height = Integer.parseInt(elt.getAttribute("height"));
 
-                if (DEBUG) {
-                    Rectangle r = new Rectangle(x, y, width, height);
-                    GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-                    GraphicsDevice[] gs = ge.getScreenDevices();
-                    for (GraphicsDevice gd : gs) {
-                        GraphicsConfiguration[] gc = gd.getConfigurations();
-                        for (int i = 0; i < gc.length; i++) {
-                            if (gc[i].getBounds().contains(r)) {
+                    if (DEBUG) {
+                        Rectangle r = new Rectangle(x, y, width, height);
+                        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+                        GraphicsDevice[] gs = ge.getScreenDevices();
+                        for (GraphicsDevice gd : gs) {
+                            GraphicsConfiguration[] gc = gd.getConfigurations();
+                            for (int i = 0; i < gc.length; i++) {
+                                if (gc[i].getBounds().contains(r)) {
                                     log.atDebug().setMessage(r + " is on screen[" + i + "] " + gc[i].getBounds()).log();
                                 }
                                 else {
                                     log
                                         .atDebug().setMessage(r + " is NOT on screen[" + i + "] " + gc[i].getBounds())
                                         .log();
+                                }
                             }
                         }
                     }
-                }
 
-                NodeList children = elt.getElementsByTagName("Dockable");
-                xmlBuildFloatingNode(children, new Rectangle(x, y, width, height)); // 2005/10/10
-                break;
-            }
-            case "TabGroups": {
-                NodeList children = elt.getElementsByTagName("TabGroup");
-                xmlBuildTabGroup(children); // 2005/10/10
-                break;
-            }
-            default:
-                throw new SAXNotRecognizedException(name);
+                    NodeList children = elt.getElementsByTagName("Dockable");
+                    xmlBuildFloatingNode(children, new Rectangle(x, y, width, height)); // 2005/10/10
+                    break;
+                }
+                case "TabGroups": {
+                    NodeList children = elt.getElementsByTagName("TabGroup");
+                    xmlBuildTabGroup(children); // 2005/10/10
+                    break;
+                }
+                default:
+                    throw new SAXNotRecognizedException(name);
             }
         }
     }
@@ -3398,37 +3398,37 @@ public class DockingDesktop extends JLayeredPane {
 
     private Component xmlCreateComponent(Element elt, DockableState.Location dockableLocation) throws SAXException {
         switch (elt.getNodeName()) {
-        case "Split":
-            return xmlBuildSplitContainer(elt, dockableLocation);
-        case "Dockable": {
-            Dockable d = xmlGetDockable(elt);
+            case "Split":
+                return xmlBuildSplitContainer(elt, dockableLocation);
+            case "Dockable": {
+                Dockable d = xmlGetDockable(elt);
                 SingleDockableContainer sdc =
                     DockableContainerFactory
                         .getFactory()
                         .createDockableContainer(d, DockableContainerFactory.ParentType.PARENT_SPLIT_CONTAINER);
-            context.setDockableState(d, new DockableState(this, d, dockableLocation));
-            d.getDockKey().setLocation(dockableLocation);
-            sdc.installDocking(this);
+                context.setDockableState(d, new DockableState(this, d, dockableLocation));
+                d.getDockKey().setLocation(dockableLocation);
+                sdc.installDocking(this);
 
-            if (d instanceof CompoundDockable) {
-                // check for children and build them
-                xmlBuildCompoundDockable((CompoundDockable) d, elt, dockableLocation);
+                if (d instanceof CompoundDockable) {
+                    // check for children and build them
+                    xmlBuildCompoundDockable((CompoundDockable) d, elt, dockableLocation);
+                }
+                return (Component) sdc;
             }
-            return (Component) sdc;
-        }
-        case "TabbedDockable":
+            case "TabbedDockable":
 
-            TabbedDockableContainer tdc = xmlBuildTabbedDockableContainer(elt, dockableLocation);
-            return (Component) tdc;
-        case "MaximizedDockable": {
+                TabbedDockableContainer tdc = xmlBuildTabbedDockableContainer(elt, dockableLocation);
+                return (Component) tdc;
+            case "MaximizedDockable": {
 
-            // this should be the last element from DockingPanel node
-            Dockable d = xmlGetDockable(elt);
-            maximize(d);
-            return null;
-        }
-        default:
-            throw new SAXNotRecognizedException(elt.getNodeName());
+                // this should be the last element from DockingPanel node
+                Dockable d = xmlGetDockable(elt);
+                maximize(d);
+                return null;
+            }
+            default:
+                throw new SAXNotRecognizedException(elt.getNodeName());
         }
     }
 
@@ -3455,7 +3455,7 @@ public class DockingDesktop extends JLayeredPane {
     }
 
     private SplitContainer xmlBuildSplitContainer(Node node, DockableState.Location dockableLocation)
-            throws SAXException {
+        throws SAXException {
         Element elt = (Element) node;
         int orientation = Integer.parseInt(elt.getAttribute("orientation"));
         String loc = elt.getAttribute("location");
@@ -3504,7 +3504,10 @@ public class DockingDesktop extends JLayeredPane {
                 }
                 context.setDockableState(d, new DockableState(this, d, dockableLocation));
                 d.getDockKey().setLocation(dockableLocation);
-                tdc.addDockable(d, tdc.getTabCount());
+
+                if (tdc.indexOfDockable(d) < 0) {
+                    tdc.addDockable(d, tdc.getTabCount());
+                }
 
                 // update the tab group
                 if (base != d) {
