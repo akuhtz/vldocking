@@ -9,7 +9,7 @@
 	<!-- groupId>com.vldocking</groupId -->
 	<groupId>org.bidib.jbidib.com.vldocking</groupId>
 	<artifactId>vldocking</artifactId>
-	<version>3.0.11-SNAPSHOT</version>
+	<version>3.0.11</version>
 	<packaging>jar</packaging>
 	<url>https://github.com/akuhtz/vldocking.git</url>
 
