@@ -34,8 +34,10 @@ jobs:
 #            ${{ runner.os }}-m2          
       - name: Show Maven version
         run: mvn --version
+      - name: Install Xvfb
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq xvfb
       - name: Build with Maven
-        run: mvn --batch-mode --update-snapshots verify
+        run: xvfb-run --auto-servernum mvn --batch-mode --update-snapshots verify
   deploy:
     if: contains( github.ref, 'master')
     needs: build
