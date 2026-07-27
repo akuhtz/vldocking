@@ -1,19 +1,47 @@
 package com.vlsolutions.swing;
 
 import com.vlsolutions.swing.sample.DockedApplication;
+import org.assertj.swing.core.BasicRobot;
 import org.assertj.swing.core.GenericTypeMatcher;
+import org.assertj.swing.core.Robot;
+import org.assertj.swing.edt.FailOnThreadViolationRepaintManager;
 import org.assertj.swing.edt.GuiActionRunner;
 import org.assertj.swing.fixture.FrameFixture;
-import org.assertj.swing.junit.testcase.AssertJSwingJUnitTestCase;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.TestInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import java.awt.Dimension;
 
-public abstract class TestBase extends AssertJSwingJUnitTestCase {
+public abstract class TestBase {
+
+    protected final Logger log = LoggerFactory.getLogger(getClass());
 
     protected FrameFixture window;
     protected DockedApplication application;
+    private Robot robot;
+
+    @BeforeAll
+    static void setUpOnce() {
+        FailOnThreadViolationRepaintManager.install();
+    }
+
+    @BeforeEach
+    void setUp(TestInfo testInfo) {
+        log.info("Starting test: {}.{}", testInfo.getTestClass().get().getSimpleName(), testInfo.getDisplayName());
+        robot = BasicRobot.robotWithNewAwtHierarchy();
+        onSetUp();
+    }
+
+    protected abstract void onSetUp();
+
+    protected Robot robot() {
+        return robot;
+    }
 
     protected DockedApplication createDockedApplication(Class<? extends DockedApplication> clazz) {
         return GuiActionRunner.execute(() -> {

@@ -1,18 +1,18 @@
 package com.vlsolutions.swing.docking.ui;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class DockingUISettingsTest {
 
     private static int notificationBlinkCount = 2;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         DockingUISettings.setInstance(new CustomDockingUISettings());
     }
@@ -20,10 +20,10 @@ public class DockingUISettingsTest {
     @Test
     public void testCustomizedParameters() {
         DockingUISettings.getInstance().installUI();
-        assertEquals(notificationBlinkCount, UIManager.get("DockingDesktop.notificationBlinkCount"));
+        assertThat(UIManager.get("DockingDesktop.notificationBlinkCount")).isEqualTo(notificationBlinkCount);
         notificationBlinkCount = 3;
         DockingUISettings.getInstance().updateUI();
-        assertEquals(notificationBlinkCount, UIManager.get("DockingDesktop.notificationBlinkCount"));
+        assertThat(UIManager.get("DockingDesktop.notificationBlinkCount")).isEqualTo(notificationBlinkCount);
     }
 
     public static class CustomDockingUISettings extends DockingUISettings {

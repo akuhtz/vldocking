@@ -3,7 +3,7 @@ package com.vlsolutions.swing.docking;
 import com.vlsolutions.swing.TestBase;
 import com.vlsolutions.swing.sample.MyTabbedDockApp;
 import org.assertj.swing.fixture.FrameFixture;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import javax.swing.SwingUtilities;
 

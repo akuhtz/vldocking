@@ -4,7 +4,7 @@ import com.vlsolutions.swing.TestBase;
 import com.vlsolutions.swing.sample.MySplitDockApp;
 import org.assertj.swing.data.TableCell;
 import org.assertj.swing.fixture.FrameFixture;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import javax.swing.SwingUtilities;
 

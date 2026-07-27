@@ -3,8 +3,9 @@ package com.vlsolutions.swing.docking;
 import com.vlsolutions.swing.TestBase;
 import com.vlsolutions.swing.sample.MySplitDockApp;
 import org.assertj.swing.fixture.FrameFixture;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 import javax.swing.SwingUtilities;
 
@@ -25,7 +26,7 @@ public class DockingDesktopTest extends TestBase {
             application.setVisible(true);
             application.getDesktop().setFloating(application.getTreePanel(), true);
         });
-        Assert.assertTrue(application.getDesktop().getDockableState(application.getTreePanel()).isFloating());
+        assertThat(application.getDesktop().getDockableState(application.getTreePanel()).isFloating()).isTrue();
     }
 
     @Test
@@ -35,9 +36,8 @@ public class DockingDesktopTest extends TestBase {
             Point p = application.getDesktop().getBounds().getLocation();
             application.getDesktop().setFloating(application.getTreePanel(), true, p);
         });
-        Assert.assertEquals(DockableState.Location.FLOATING,
-                application.getTreePanel().getDockKey().getLocation());
-        Assert.assertTrue(application.getDesktop().getDockableState(application.getTreePanel()).isFloating());
+        assertThat(application.getTreePanel().getDockKey().getLocation()).isEqualTo(DockableState.Location.FLOATING);
+        assertThat(application.getDesktop().getDockableState(application.getTreePanel()).isFloating()).isTrue();
     }
 
     @Test
@@ -46,8 +46,7 @@ public class DockingDesktopTest extends TestBase {
             application.setVisible(true);
             application.getDesktop().maximize(application.getTreePanel());
         });
-        Assert.assertTrue(
-                application.getDesktop().getDockableState(application.getTreePanel()).isMaximized());
+        assertThat(application.getDesktop().getDockableState(application.getTreePanel()).isMaximized()).isTrue();
     }
 
 }
