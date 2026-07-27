@@ -1,16 +1,17 @@
 package com.vlsolutions.swing.docking;
 
-import com.vlsolutions.swing.TestBase;
-import com.vlsolutions.swing.sample.MySplitDockApp;
-import org.assertj.swing.fixture.FrameFixture;
-import org.junit.jupiter.api.Test;
-
 import static org.assertj.core.api.Assertions.assertThat;
-
-import javax.swing.SwingUtilities;
 
 import java.awt.Point;
 import java.lang.reflect.InvocationTargetException;
+
+import javax.swing.SwingUtilities;
+
+import org.assertj.swing.fixture.FrameFixture;
+import org.junit.jupiter.api.Test;
+
+import com.vlsolutions.swing.TestBase;
+import com.vlsolutions.swing.sample.MySplitDockApp;
 
 public class DockingDesktopTest extends TestBase {
     @Override

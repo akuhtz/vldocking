@@ -272,18 +272,10 @@
 			<version>4.0.0-beta-3</version>
 			<scope>test</scope>
 			<exclusions>
-				<exclusion>
-					<groupId>org.junit.jupiter</groupId>
-					<artifactId>junit-jupiter</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.junit.jupiter</groupId>
-					<artifactId>junit-jupiter-engine</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>tokyo.northside</groupId>
-					<artifactId>assertj-swing-junit</artifactId>
-				</exclusion>
+                <exclusion>
+                    <groupId>junit</groupId>
+                    <artifactId>junit</artifactId>
+                </exclusion>
 			</exclusions>
 		</dependency>			
 

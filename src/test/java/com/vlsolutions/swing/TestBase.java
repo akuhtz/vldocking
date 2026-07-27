@@ -7,6 +7,7 @@ import org.assertj.swing.core.Robot;
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager;
 import org.assertj.swing.edt.GuiActionRunner;
 import org.assertj.swing.fixture.FrameFixture;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInfo;
@@ -35,6 +36,13 @@ public abstract class TestBase {
         log.info("Starting test: {}.{}", testInfo.getTestClass().get().getSimpleName(), testInfo.getDisplayName());
         robot = BasicRobot.robotWithNewAwtHierarchy();
         onSetUp();
+    }
+    
+    @AfterEach
+    void tearDown() {
+        if (window != null) {
+            window.cleanUp();
+        }
     }
 
     protected abstract void onSetUp();
