@@ -39,7 +39,7 @@ jobs:
       - name: Build with Maven
         run: xvfb-run --auto-servernum mvn --batch-mode --update-snapshots verify
   deploy:
-    if: contains( github.ref, 'master')
+    if: contains( github.ref, 'main')
     needs: build
     name: Deploy
     runs-on: ubuntu-latest
