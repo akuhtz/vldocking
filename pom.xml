@@ -3,7 +3,7 @@
 
 	<groupId>org.bidib.jbidib.com.vldocking</groupId>
 	<artifactId>vldocking</artifactId>
-	<version>3.0.13-SNAPSHOT</version>
+	<version>3.0.13</version>
 	<packaging>jar</packaging>
 	<url>https://github.com/akuhtz/vldocking.git</url>
 
@@ -56,6 +56,8 @@
 		<logback.version>1.6.1</logback.version>
 		<slf4j.version>2.0.18</slf4j.version>
 
+        <version.njord>0.9.9</version.njord>
+        
 		<gpg.useagent>true</gpg.useagent>
 	</properties>
 
@@ -85,6 +87,13 @@
     </distributionManagement>
 
 	<build>
+        <extensions>
+            <extension>
+              <groupId>eu.maveniverse.maven.njord</groupId>
+              <artifactId>extension3</artifactId>
+              <version>${version.njord}</version>
+            </extension>
+        </extensions>
 		<pluginManagement>
 
 			<plugins>
@@ -146,23 +155,16 @@
                         </argLine>
                     </configuration>
                 </plugin>
-                <plugin>
-                    <groupId>org.sonatype.plugins</groupId>
-                    <artifactId>nexus-staging-maven-plugin</artifactId>
-                    <version>1.7.0</version>
-                </plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>flatten-maven-plugin</artifactId>
 					<version>1.8.0</version>
                 </plugin>
-				
 				<plugin>
-					<groupId>org.sonatype.central</groupId>
-					<artifactId>central-publishing-maven-plugin</artifactId>
-					<version>0.11.0</version>
-				</plugin>
-				
+                    <groupId>eu.maveniverse.maven.plugins</groupId>
+                    <artifactId>njord</artifactId>
+                    <version>${version.njord}</version>
+                </plugin>
 			</plugins>
 
 		</pluginManagement>
@@ -320,20 +322,6 @@
 								</goals>
 							</execution>
 						</executions>
-					</plugin>
-					
-					<plugin>
-						<groupId>org.sonatype.central</groupId>
-						<artifactId>central-publishing-maven-plugin</artifactId>
-						<extensions>true</extensions>
-						<configuration>
-							<publishingServerId>central</publishingServerId>
-							<!--
-							<autoPublish>true</autoPublish>
-							<waitUntil>published</waitUntil>
-							-->
-							<waitUntil>validated</waitUntil>
-						</configuration>
 					</plugin>
 				</plugins>
 			</build>
