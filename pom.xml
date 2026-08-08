@@ -56,7 +56,7 @@
 		<logback.version>1.6.1</logback.version>
 		<slf4j.version>2.0.18</slf4j.version>
 
-        <version.njord>0.9.9</version.njord>
+        <version.njord>0.9.10</version.njord>
         
 		<gpg.useagent>true</gpg.useagent>
 	</properties>
